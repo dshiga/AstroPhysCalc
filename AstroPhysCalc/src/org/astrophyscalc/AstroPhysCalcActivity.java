@@ -1,12 +1,19 @@
 package org.astrophyscalc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -113,6 +120,35 @@ public class AstroPhysCalcActivity extends Activity {
         	}
         };
 
+        List<UnitSpinnerItem> items = new ArrayList<UnitSpinnerItem>();
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_EARTH), "Earths"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_JUP), "Jupiters"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_SUN), "Suns"));
+        ArrayAdapter<UnitSpinnerItem> adapter = new UnitArrayAdapter<UnitSpinnerItem>(getBaseContext(), R.layout.unit_spinner_item,
+        			R.id.spinnerItemLabel, items);
+        Spinner unitSpinner1 = (Spinner) findViewById(R.id.units1);
+		unitSpinner1.setAdapter(adapter);
+
+        items = new ArrayList<UnitSpinnerItem>();
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.KM), "km"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.AU), "AU"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.LY), "ly"));
+        adapter = new UnitArrayAdapter<UnitSpinnerItem>(getBaseContext(), R.layout.unit_spinner_item,
+        			R.id.spinnerItemLabel, items);
+        Spinner unitSpinner2 = (Spinner) findViewById(R.id.units2);
+		unitSpinner2.setAdapter(adapter);
+
+		items = new ArrayList<UnitSpinnerItem>();
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(TimeUnit.S), "s"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(TimeUnit.MIN), "minutes"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(TimeUnit.HR), "hours"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(TimeUnit.DAYS), "days"));
+        items.add(UnitSpinnerItem.create(UnitExpression.createFromUnit(TimeUnit.YEARS), "years"));
+        adapter = new UnitArrayAdapter<UnitSpinnerItem>(getBaseContext(), R.layout.unit_spinner_item,
+        			R.id.spinnerItemLabel, items);
+        Spinner unitSpinner3 = (Spinner) findViewById(R.id.units3);
+		unitSpinner3.setAdapter(adapter);
+
         setSpinnersToPositions(2, 1, 4);
         enableSpinnerChangeListeners();
     }
@@ -171,9 +207,13 @@ public class AstroPhysCalcActivity extends Activity {
 		return getDouble(textValue);
 	}
 
-	String getStringFromSpinner(final int spinnerId) {
+	UnitExpression getUnitsFromSpinner(final int spinnerId) {
 		Spinner spinner1 = (Spinner) findViewById(spinnerId);
-		return (String) spinner1.getSelectedItem();
+		UnitSpinnerItem item = (UnitSpinnerItem) spinner1.getSelectedItem();
+		if (item == null) {
+			return null;
+		}
+		return item.getUnitExpression();
 	}
 
 	ValueAndUnits getPeriod() {
@@ -185,17 +225,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Get input units
-		String radiusUnitsText = getStringFromSpinner(R.id.units2);
-		final LengthUnit radiusUnit = LengthUnit.getUnit(radiusUnitsText);
-		String massUnitsText = getStringFromSpinner(R.id.units1);
-		final MassUnit massUnit = MassUnit.getUnit(massUnitsText);
-		if (massUnit == null || radiusUnit == null) {
+		UnitExpression radiusUnits = getUnitsFromSpinner(R.id.units2);
+		UnitExpression massUnits = getUnitsFromSpinner(R.id.units1);
+		if (massUnits == null || radiusUnits == null) {
 			return null;
 		}
 
 		// Inputs
-		final ValueAndUnits radius = ValueAndUnits.createFromUnit(radiusValue, radiusUnit);
-		final ValueAndUnits mass = ValueAndUnits.createFromUnit(massValue, massUnit);
+		final ValueAndUnits radius = ValueAndUnits.create(radiusValue, radiusUnits);
+		final ValueAndUnits mass = ValueAndUnits.create(massValue, massUnits);
 
 		// Calculate period
 		return calculatePeriod(radius, mass);
@@ -210,17 +248,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Get input units
-		String periodUnitsText = getStringFromSpinner(R.id.units3);
-		final TimeUnit periodUnit = TimeUnit.getUnit(periodUnitsText);
-		String massUnitsText = getStringFromSpinner(R.id.units1);
-		final MassUnit massUnit = MassUnit.getUnit(massUnitsText);
-		if (massUnit == null || periodUnit == null) {
+		UnitExpression periodUnits = getUnitsFromSpinner(R.id.units3);
+		UnitExpression massUnits = getUnitsFromSpinner(R.id.units1);
+		if (massUnits == null || periodUnits == null) {
 			return null;
 		}
 
 		// Inputs
-		final ValueAndUnits period = ValueAndUnits.createFromUnit(periodValue, periodUnit);
-		final ValueAndUnits mass = ValueAndUnits.createFromUnit(massValue, massUnit);
+		final ValueAndUnits period = ValueAndUnits.create(periodValue, periodUnits);
+		final ValueAndUnits mass = ValueAndUnits.create(massValue, massUnits);
 
 		// Calculate radius
 		return calculateRadius(period, mass);
@@ -236,17 +272,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Get input units
-		String radiusUnitsText = getStringFromSpinner(R.id.units2);
-		final LengthUnit radiusUnit = LengthUnit.getUnit(radiusUnitsText);
-		String periodUnitsText = getStringFromSpinner(R.id.units3);
-		final TimeUnit periodUnit = TimeUnit.getUnit(periodUnitsText);
-		if (radiusUnit == null || periodUnit == null) {
+		UnitExpression radiusUnits = getUnitsFromSpinner(R.id.units2);
+		UnitExpression periodUnits = getUnitsFromSpinner(R.id.units3);
+		if (radiusUnits == null || periodUnits == null) {
 			return null;
 		}
 
 		// Inputs
-		final ValueAndUnits period = ValueAndUnits.createFromUnit(periodValue, periodUnit);
-		final ValueAndUnits radius = ValueAndUnits.createFromUnit(radiusValue, radiusUnit);
+		final ValueAndUnits period = ValueAndUnits.create(periodValue, periodUnits);
+		final ValueAndUnits radius = ValueAndUnits.create(radiusValue, radiusUnits);
 
 		// Calculate radius
 		return calculateMass(radius, period);
@@ -266,11 +300,11 @@ public class AstroPhysCalcActivity extends Activity {
 		setText(text3, mass.getValue());
 
 		// Set units spinner
-		final String unitName = mass.getUnitName();
 		Spinner spinner1 = (Spinner) findViewById(R.id.units1);
 		for (int i = 0; i < spinner1.getCount(); i++) {
-			String s = (String) spinner1.getItemAtPosition(i);
-			if (unitName.equals(s)) {
+			UnitSpinnerItem item = (UnitSpinnerItem) spinner1.getItemAtPosition(i);
+			if (item != null && item.getUnitExpression() != null &&
+					item.getUnitExpression().equals(mass.getUnitExpression())) {
 				spinner1.setSelection(i);
 				break;
 			}
@@ -284,12 +318,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Convert to units in spinner
-		final String unitName = (String) adapterView.getItemAtPosition(position);
-		Unit unit = MassUnit.getUnit(unitName);
-		if (unit == null) {
+		final UnitSpinnerItem item = (UnitSpinnerItem) adapterView.getItemAtPosition(position);
+		if (item == null) {
 			return;
 		}
-		mass = mass.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, unit));
+		final UnitExpression expr = item.getUnitExpression();
+		if (expr == null) {
+			return;
+		}
+		mass = mass.toSameUnitsAs(ValueAndUnits.create(1d, expr));
 
 		// Fill in text box
 		final TextView text3 = (TextView) findViewById(R.id.text1);
@@ -310,11 +347,11 @@ public class AstroPhysCalcActivity extends Activity {
 		setText(text3, period.getValue());
 
 		// Set units spinner
-		final String unitName = period.getUnitName();
 		Spinner spinner1 = (Spinner) findViewById(R.id.units3);
 		for (int i = 0; i < spinner1.getCount(); i++) {
-			String s = (String) spinner1.getItemAtPosition(i);
-			if (unitName.equals(s)) {
+			UnitSpinnerItem item = (UnitSpinnerItem) spinner1.getItemAtPosition(i);
+			if (item != null && item.getUnitExpression() != null &&
+					item.getUnitExpression().equals(period.getUnitExpression())) {
 				spinner1.setSelection(i);
 				break;
 			}
@@ -328,12 +365,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Convert to units in spinner
-		final String unitName = (String) adapterView.getItemAtPosition(position);
-		Unit unit = TimeUnit.getUnit(unitName);
-		if (unit == null) {
+		final UnitSpinnerItem item = (UnitSpinnerItem) adapterView.getItemAtPosition(position);
+		if (item == null) {
 			return;
 		}
-		period = period.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, unit));
+		final UnitExpression expr = item.getUnitExpression();
+		if (expr == null) {
+			return;
+		}
+		period = period.toSameUnitsAs(ValueAndUnits.create(1d, expr));
 
 		// Fill in text box
 		final TextView text3 = (TextView) findViewById(R.id.text3);
@@ -354,11 +394,11 @@ public class AstroPhysCalcActivity extends Activity {
 		setText(text3, radius.getValue());
 
 		// Set spinner to correct unit
-		final String unitName = radius.getUnitName();
 		Spinner unitSpinner2 = (Spinner) findViewById(R.id.units2);
 		for (int i = 0; i < unitSpinner2.getCount(); i++) {
-			String s = (String) unitSpinner2.getItemAtPosition(i);
-			if (unitName.equals(s)) {
+			UnitSpinnerItem item = (UnitSpinnerItem) unitSpinner2.getItemAtPosition(i);
+			if (item != null && item.getUnitExpression() != null &&
+					item.getUnitExpression().equals(radius.getUnitExpression())) {
 				unitSpinner2.setSelection(i);
 				break;
 			}
@@ -372,12 +412,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Convert to units in spinner
-		final String unitName = (String) adapterView.getItemAtPosition(position);
-		Unit unit = LengthUnit.getUnit(unitName);
-		if (unit == null) {
+		final UnitSpinnerItem item = (UnitSpinnerItem) adapterView.getItemAtPosition(position);
+		if (item == null) {
 			return;
 		}
-		radius = radius.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, unit));
+		final UnitExpression expr = item.getUnitExpression();
+		if (expr == null) {
+			return;
+		}
+		radius = radius.toSameUnitsAs(ValueAndUnits.create(1d, expr));
 
 		// Fill in text box
 		final TextView text3 = (TextView) findViewById(R.id.text2);
@@ -419,6 +462,37 @@ public class AstroPhysCalcActivity extends Activity {
 
 	double p(final double x, final double y) {
 		return Math.pow(x, y);
+	}
+
+	public class UnitArrayAdapter<UnitSpinnerItem> extends ArrayAdapter<UnitSpinnerItem> {
+
+		public UnitArrayAdapter(Context context, int resource,
+				int textViewResourceId, List<UnitSpinnerItem> objects) {
+			super(context, resource, textViewResourceId, objects);
+		}
+
+		@Override
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			UnitSpinnerItem item = getItem(position);
+
+			LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View view = inflater.inflate(R.layout.unit_spinner_item, parent, false);
+			TextView text = (TextView) view.findViewById(R.id.spinnerItemLabel);
+			text.setText(item.toString());
+			return view;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			UnitSpinnerItem item = getItem(position);
+
+			LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View view = inflater.inflate(R.layout.unit_spinner_selected, parent, false);
+			TextView text = (TextView) view.findViewById(R.id.spinnerItemLabel);
+			text.setText(item.toString());
+			return view;
+		}
+
 	}
 
 }

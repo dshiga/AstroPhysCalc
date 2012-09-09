@@ -26,7 +26,6 @@
 	        android:id="@+id/units1"
 	        android:layout_width="@dimen/spinner"
 	        android:layout_height="wrap_content"
-	        android:entries="@array/massUnits"
 	        />
 	    
 	    <Button
@@ -59,7 +58,6 @@
 	        android:id="@+id/units2"
 	        android:layout_width="@dimen/spinner"
 	        android:layout_height="wrap_content"
-	        android:entries="@array/lengthUnits"
 	        />	    
 	    
 	    <Button
@@ -93,7 +91,6 @@
 	        android:id="@+id/units3"
 	        android:layout_width="@dimen/spinner"
 	        android:layout_height="wrap_content"
-	        android:entries="@array/timeUnits"
 	        />
 	    
 	    <Button
