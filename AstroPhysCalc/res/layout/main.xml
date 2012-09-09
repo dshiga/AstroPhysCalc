@@ -5,6 +5,12 @@
     android:layout_margin="10dp"
     android:orientation="vertical" >
 
+    <Spinner 
+        android:id="@+id/pageSpinner"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp" />
+    
     <TextView
         android:id="@+id/label1"        
         android:layout_width="wrap_content"

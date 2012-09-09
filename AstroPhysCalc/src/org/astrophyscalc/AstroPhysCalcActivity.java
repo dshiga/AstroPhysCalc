@@ -1,5 +1,6 @@
 package org.astrophyscalc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -19,11 +20,15 @@ import android.widget.TextView;
 
 public class AstroPhysCalcActivity extends Activity {
 
-    private static final CalcPage calcPage = CalcPage.ORBITS;
-
 	OnItemSelectedListener unitsListener1;
 	OnItemSelectedListener unitsListener2;
 	OnItemSelectedListener unitsListener3;
+
+    List<CalcRow> rowList1;
+    List<CalcRow> rowList2;
+    List<CalcRow> rowList3;
+
+    private boolean spinnersEnabled;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,15 +37,32 @@ public class AstroPhysCalcActivity extends Activity {
 		// Set layout
         setContentView(R.layout.main);
 
-        final List<List<CalcRow>> listOfLists = calcPage.getListOfLists();
-        final List<CalcRow> rowList1 = listOfLists.get(0);
-        final List<CalcRow> rowList2 = listOfLists.get(1);
-        final List<CalcRow> rowList3 = listOfLists.get(2);
+        final List<CalcPage> calcPages = new ArrayList<CalcPage>();
+        calcPages.add(CalcPage.ORBITS);
+
+	    ArrayAdapter<CalcPage> adapter = new PageArrayAdapter(
+	    		getBaseContext(), R.layout.page_spinner_item,
+	    		R.id.spinnerItemLabel, calcPages);
+	    Spinner pageSpinner = (Spinner) findViewById(R.id.pageSpinner);
+	    pageSpinner.setAdapter(adapter);
+
+        OnItemSelectedListener pageSpinnerListener = new OnItemSelectedListener() {
+        	@Override
+        	public void onItemSelected(AdapterView<?> adapterView, View selectedView, int position, long id) {
+        		onPageChanged(adapterView, position);
+        	}
+
+        	@Override
+        	public void onNothingSelected(AdapterView<?> v) {
+        	}
+        };
+        pageSpinner.setOnItemSelectedListener(pageSpinnerListener);
+		pageSpinner.setSelection(0);
 
         // Set up button click listeners
         OnClickListener buttonListener1 = new OnClickListener() {
         	public void onClick(View v) {
-        		onCalcClicked(v, rowList1.get(0), rowList1.get(1), rowList1.get(2));
+        		onCalcClicked(v, rowList1);
         	}
         };
         Button button1 = (Button) findViewById(R.id.button1);
@@ -48,7 +70,7 @@ public class AstroPhysCalcActivity extends Activity {
 
         OnClickListener buttonListener2 = new OnClickListener() {
         	public void onClick(View v) {
-        		onCalcClicked(v, rowList2.get(0), rowList2.get(1), rowList2.get(2));
+        		onCalcClicked(v, rowList2);
         	}
         };
         Button button2 = (Button) findViewById(R.id.button2);
@@ -56,7 +78,7 @@ public class AstroPhysCalcActivity extends Activity {
 
         OnClickListener buttonListener3 = new OnClickListener() {
         	public void onClick(View v) {
-        		onCalcClicked(v, rowList3.get(0), rowList3.get(1), rowList3.get(2));
+        		onCalcClicked(v, rowList3);
         	}
         };
         Button button3 = (Button) findViewById(R.id.button3);
@@ -67,7 +89,10 @@ public class AstroPhysCalcActivity extends Activity {
         unitsListener1 = new OnItemSelectedListener() {
         	@Override
         	public void onItemSelected(AdapterView<?> adapterView, View selectedView, int position, long id) {
-        		onUnitChanged(adapterView, position, rowList1.get(0), rowList1.get(1), rowList1.get(2));
+        		if (!getSpinnersEnabled()) {
+        			return;
+        		}
+        		onUnitChanged(adapterView, position, rowList1);
         	}
 
         	@Override
@@ -78,7 +103,10 @@ public class AstroPhysCalcActivity extends Activity {
         unitsListener2 = new OnItemSelectedListener() {
         	@Override
         	public void onItemSelected(AdapterView<?> adapterView, View selectedView, int position, long id) {
-        		onUnitChanged(adapterView, position, rowList2.get(0), rowList2.get(1), rowList2.get(2));
+        		if (!getSpinnersEnabled()) {
+        			return;
+        		}
+        		onUnitChanged(adapterView, position, rowList2);
         	}
 
         	@Override
@@ -89,7 +117,10 @@ public class AstroPhysCalcActivity extends Activity {
         unitsListener3 = new OnItemSelectedListener() {
         	@Override
         	public void onItemSelected(AdapterView<?> adapterView, View selectedView, int position, long id) {
-        		onUnitChanged(adapterView, position, rowList3.get(0), rowList3.get(1), rowList3.get(2));
+        		if (!getSpinnersEnabled()) {
+        			return;
+        		}
+        		onUnitChanged(adapterView, position, rowList3);
         	}
 
         	@Override
@@ -97,19 +128,38 @@ public class AstroPhysCalcActivity extends Activity {
         	}
         };
 
+        setSpinnersEnabled(true);
+
+        setSpinnerChangeListener(R.id.units1, unitsListener1);
+        setSpinnerChangeListener(R.id.units2, unitsListener2);
+        setSpinnerChangeListener(R.id.units3, unitsListener3);
+    }
+
+	void onPageChanged(final AdapterView<? extends Adapter> adapterView, final int position) {
+
+		final CalcPage page = (CalcPage) adapterView.getItemAtPosition(position);
+        final List<List<CalcRow>> listOfLists = page.getListOfLists();
+
+        rowList1 = listOfLists.get(0);
+        rowList2 = listOfLists.get(1);
+        rowList3 = listOfLists.get(2);
+
         setTextBoxLabel(rowList1.get(0));
         setTextBoxLabel(rowList2.get(0));
         setTextBoxLabel(rowList3.get(0));
+
+        clearTextBox(rowList1.get(0));
+        clearTextBox(rowList2.get(0));
+        clearTextBox(rowList3.get(0));
+
+        disableSpinners();
 
         initSpinner(rowList1.get(0));
         initSpinner(rowList2.get(0));
         initSpinner(rowList3.get(0));
 
-        setSpinnerChangeListener(rowList1.get(0), unitsListener1);
-        setSpinnerChangeListener(rowList2.get(0), unitsListener2);
-        setSpinnerChangeListener(rowList3.get(0), unitsListener3);
-    }
-
+        enableSpinners();
+	}
 
 	/**
 	 * Set the label above the TextView.
@@ -117,6 +167,27 @@ public class AstroPhysCalcActivity extends Activity {
 	void setTextBoxLabel(final CalcRow calcRow) {
         TextView tv = (TextView) findViewById(calcRow.getLabelId());
         tv.setText(calcRow.getLabelStringId());
+	}
+
+	void clearTextBox(final CalcRow calcRow) {
+		TextView tv = (TextView) findViewById(calcRow.getTextId());
+		tv.setText("");
+	}
+
+	void disableSpinners() {
+		setSpinnersEnabled(false);
+	}
+
+	void enableSpinners() {
+		setSpinnersEnabled(true);
+	}
+
+	private boolean getSpinnersEnabled() {
+		return spinnersEnabled;
+	}
+
+	private void setSpinnersEnabled(final boolean enabled) {
+		spinnersEnabled = enabled;
 	}
 
 	/**
@@ -127,7 +198,7 @@ public class AstroPhysCalcActivity extends Activity {
 	 * @param default3
 	 */
 	void initSpinner(final CalcRow calcRow) {
-	    ArrayAdapter<UnitSpinnerItem> adapter = new UnitArrayAdapter<UnitSpinnerItem>(
+	    ArrayAdapter<UnitSpinnerItem> adapter = new UnitArrayAdapter(
 	    		getBaseContext(), R.layout.unit_spinner_item,
 	    		R.id.spinnerItemLabel, calcRow.getSpinnerItems());
 	    Spinner unitSpinner = (Spinner) findViewById(calcRow.getSpinnerId());
@@ -136,8 +207,8 @@ public class AstroPhysCalcActivity extends Activity {
 	}
 
 
-	void setSpinnerChangeListener(final CalcRow calcRow, final OnItemSelectedListener listener) {
-        Spinner unitSpinner = (Spinner) findViewById(calcRow.getSpinnerId());
+	void setSpinnerChangeListener(final int spinnerId, final OnItemSelectedListener listener) {
+        Spinner unitSpinner = (Spinner) findViewById(spinnerId);
         unitSpinner.setOnItemSelectedListener(listener);
 	}
 
@@ -160,7 +231,11 @@ public class AstroPhysCalcActivity extends Activity {
 		return item.getUnitExpression();
 	}
 
-	void onCalcClicked(final View v, final CalcRow resultRow, final CalcRow inputRow1, final CalcRow inputRow2) {
+	void onCalcClicked(final View v, final List<CalcRow> rows) {
+		final CalcRow resultRow = rows.get(0);
+		final CalcRow inputRow1 = rows.get(1);
+		final CalcRow inputRow2 = rows.get(2);
+
 		Double inputValue1 = getValueFromTextView(inputRow1.getTextId());
 		Double inputValue2 = getValueFromTextView(inputRow2.getTextId());
 		if (!hasValue(inputValue1) || !hasValue(inputValue2)) {
@@ -203,7 +278,11 @@ public class AstroPhysCalcActivity extends Activity {
 	}
 
 	void onUnitChanged(final AdapterView<? extends Adapter> adapterView, final int position,
-			final CalcRow resultRow, final CalcRow inputRow1, final CalcRow inputRow2) {
+			final List<CalcRow> rows) {
+		final CalcRow resultRow = rows.get(0);
+		final CalcRow inputRow1 = rows.get(1);
+		final CalcRow inputRow2 = rows.get(2);
+
 		Double inputValue1 = getValueFromTextView(inputRow1.getTextId());
 		Double inputValue2 = getValueFromTextView(inputRow2.getTextId());
 		if (!hasValue(inputValue2) || !hasValue(inputValue1)) {
@@ -242,172 +321,6 @@ public class AstroPhysCalcActivity extends Activity {
 		setText(tv, result.getValue());
 	}
 
-	/*void onCalc3Clicked(View v, final CalcRow calcRow3) {
-		// Get input values
-		Double value1 = getValueFromTextView(R.id.text1);
-		Double value2 = getValueFromTextView(R.id.text2);
-		if (!hasValue(value2) || !hasValue(value1)) {
-			return;
-		}
-
-		// Get input units
-		UnitExpression units2 = getUnitsFromSpinner(R.id.units2);
-		UnitExpression units1 = getUnitsFromSpinner(R.id.units1);
-		if (units1 == null || units2 == null) {
-			return;
-		}
-
-		// Inputs
-		final ValueAndUnits vu2 = ValueAndUnits.create(value2, units2);
-		final ValueAndUnits vu1 = ValueAndUnits.create(value1, units1);
-
-		ValueAndUnits vu = calcRow3.calculate(vu2, vu1);
-		if (vu == null) {
-			return;
-		}
-
-		// Convert to preferred units
-		vu = vu.toSameUnitsAs(calcRow3.getPreferredUnits(vu));
-
-		// Fill in text box
-		final TextView text3 = (TextView) findViewById(R.id.text3);
-		setText(text3, vu.getValue());
-
-		// Set units spinner
-		Spinner spinner3 = (Spinner) findViewById(R.id.units3);
-		for (int i = 0; i < spinner3.getCount(); i++) {
-			UnitSpinnerItem item = (UnitSpinnerItem) spinner3.getItemAtPosition(i);
-			if (item != null && item.getUnitExpression() != null &&
-					item.getUnitExpression().equals(vu.getUnitExpression())) {
-				spinner3.setSelection(i);
-				break;
-			}
-		}
-	}*/
-
-/*	void onUnit3Changed(final AdapterView<? extends Adapter> adapterView, final int position, final CalcRow calcRow3) {
-		// Get input values
-		Double value1 = getValueFromTextView(R.id.text1);
-		Double value2 = getValueFromTextView(R.id.text2);
-		if (!hasValue(value2) || !hasValue(value1)) {
-			return;
-		}
-
-		// Get input units
-		UnitExpression units2 = getUnitsFromSpinner(R.id.units2);
-		UnitExpression units1 = getUnitsFromSpinner(R.id.units1);
-		if (units1 == null || units2 == null) {
-			return;
-		}
-
-		// Inputs
-		final ValueAndUnits vu2 = ValueAndUnits.create(value2, units2);
-		final ValueAndUnits vu1 = ValueAndUnits.create(value1, units1);
-
-		ValueAndUnits vu = calcRow3.calculate(vu2, vu1);
-		if (vu == null) {
-			return;
-		}
-
-		// Convert to units in spinner
-		final UnitSpinnerItem item = (UnitSpinnerItem) adapterView.getItemAtPosition(position);
-		if (item == null) {
-			return;
-		}
-		final UnitExpression expr = item.getUnitExpression();
-		if (expr == null) {
-			return;
-		}
-		vu = vu.toSameUnitsAs(ValueAndUnits.create(1d, expr));
-
-		// Fill in text box
-		final TextView text3 = (TextView) findViewById(R.id.text3);
-		setText(text3, vu.getValue());
-	}*/
-
-	/*void onCalc2Clicked(View v, final CalcRow calcRow2) {
-		// Get input values
-		Double value1 = getValueFromTextView(R.id.text1);
-		Double value3 = getValueFromTextView(R.id.text3);
-		if (!hasValue(value3) || !hasValue(value1)) {
-			return;
-		}
-
-		// Get input units
-		UnitExpression units3 = getUnitsFromSpinner(R.id.units3);
-		UnitExpression units1 = getUnitsFromSpinner(R.id.units1);
-		if (units1 == null || units3 == null) {
-			return;
-		}
-
-		// Inputs
-		final ValueAndUnits vu3 = ValueAndUnits.create(value3, units3);
-		final ValueAndUnits vu1 = ValueAndUnits.create(value1, units1);
-
-		ValueAndUnits vu = calcRow2.calculate(vu3, vu1);
-		if (vu == null) {
-			return;
-		}
-
-		// Convert to preferred units
-		vu = vu.toSameUnitsAs(calcRow2.getPreferredUnits(vu));
-
-		// Fill in text box
-		final TextView text3 = (TextView) findViewById(R.id.text2);
-		setText(text3, vu.getValue());
-
-		// Set spinner to correct unit
-		Spinner unitSpinner2 = (Spinner) findViewById(R.id.units2);
-		for (int i = 0; i < unitSpinner2.getCount(); i++) {
-			UnitSpinnerItem item = (UnitSpinnerItem) unitSpinner2.getItemAtPosition(i);
-			if (item != null && item.getUnitExpression() != null &&
-					item.getUnitExpression().equals(vu.getUnitExpression())) {
-				unitSpinner2.setSelection(i);
-				break;
-			}
-		}
-	}*/
-
-/*	void onUnit2Changed(final AdapterView<? extends Adapter> adapterView, final int position, final CalcRow calcRow2) {
-		// Get input values
-		Double value1 = getValueFromTextView(R.id.text1);
-		Double value3 = getValueFromTextView(R.id.text3);
-		if (!hasValue(value3) || !hasValue(value1)) {
-			return;
-		}
-
-		// Get input units
-		UnitExpression units3 = getUnitsFromSpinner(R.id.units3);
-		UnitExpression units1 = getUnitsFromSpinner(R.id.units1);
-		if (units1 == null || units3 == null) {
-			return;
-		}
-
-		// Inputs
-		final ValueAndUnits vu3 = ValueAndUnits.create(value3, units3);
-		final ValueAndUnits vu1 = ValueAndUnits.create(value1, units1);
-
-		ValueAndUnits vu = calcRow2.calculate(vu3, vu1);
-		if (vu == null) {
-			return;
-		}
-
-		// Convert to units in spinner
-		final UnitSpinnerItem item = (UnitSpinnerItem) adapterView.getItemAtPosition(position);
-		if (item == null) {
-			return;
-		}
-		final UnitExpression expr = item.getUnitExpression();
-		if (expr == null) {
-			return;
-		}
-		vu = vu.toSameUnitsAs(ValueAndUnits.create(1d, expr));
-
-		// Fill in text box
-		final TextView text2 = (TextView) findViewById(R.id.text2);
-		setText(text2, vu.getValue());
-	}*/
-
 	Double getDouble(final String text) {
 		if (text == null || text.length() == 0) {
 			return Double.NaN;
@@ -433,7 +346,7 @@ public class AstroPhysCalcActivity extends Activity {
 		return Math.pow(x, y);
 	}
 
-	public class UnitArrayAdapter<UnitSpinnerItem> extends ArrayAdapter<UnitSpinnerItem> {
+	private class UnitArrayAdapter extends ArrayAdapter<UnitSpinnerItem> {
 
 		public UnitArrayAdapter(Context context, int resource,
 				int textViewResourceId, List<UnitSpinnerItem> objects) {
@@ -461,7 +374,38 @@ public class AstroPhysCalcActivity extends Activity {
 			text.setText(item.toString());
 			return view;
 		}
+	}
+
+	private class PageArrayAdapter extends ArrayAdapter<CalcPage> {
+
+		public PageArrayAdapter(Context context, int resource,
+				int textViewResourceId, List<CalcPage> objects) {
+			super(context, resource, textViewResourceId, objects);
+		}
+
+		@Override
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			CalcPage item = getItem(position);
+
+			LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View view = inflater.inflate(R.layout.page_spinner_item, parent, false);
+			TextView text = (TextView) view.findViewById(R.id.spinnerItemLabel);
+			text.setText(item.getTitleStringId());
+			return view;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			CalcPage item = getItem(position);
+
+			LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View view = inflater.inflate(R.layout.page_spinner_selected, parent, false);
+			TextView text = (TextView) view.findViewById(R.id.spinnerItemLabel);
+			text.setText(item.getTitleStringId());
+			return view;
+		}
 
 	}
+
 
 }

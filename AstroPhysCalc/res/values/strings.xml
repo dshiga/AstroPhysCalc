@@ -3,6 +3,8 @@
 
     <string name="app_name">AstroPhysCalc</string>
     
+    <string name="orbitPageTitle">Orbits</string>
+        
     <string name="massLabel">Mass</string>
     <string name="radiusLabel">Radius</string>
     <string name="periodLabel">Period</string>
