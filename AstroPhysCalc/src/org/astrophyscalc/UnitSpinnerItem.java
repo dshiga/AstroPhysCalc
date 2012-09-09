@@ -2,6 +2,8 @@ package org.astrophyscalc;
 
 public class UnitSpinnerItem {
 
+	// Orbits
+
 	public static final UnitSpinnerItem[] ORBIT_MASS = {
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_EARTH), "Earths"),
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_JUP), "Jupiters"),
@@ -23,6 +25,8 @@ public class UnitSpinnerItem {
 	};
 
 
+	// Kinetic energy
+
 	public static final UnitSpinnerItem[] KE_MASS = {
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.G), "G"),
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.KG), "KG")
@@ -37,6 +41,39 @@ public class UnitSpinnerItem {
 	public static final UnitSpinnerItem[] KE_VELOCITY = {
         UnitSpinnerItem.create(UnitExpression.create(UnitAndDim.create(LengthUnit.M),
         		UnitAndDim.create(TimeUnit.S, -1)), "m/s")
+    };
+
+
+	// Flux
+
+	public static final UnitSpinnerItem[] FLUX_POWER = {
+        UnitSpinnerItem.create(UnitExpression.create(
+        		UnitAndDim.create(MassUnit.KG),
+        		UnitAndDim.create(LengthUnit.M, 2),
+        		UnitAndDim.create(TimeUnit.S, -3)), "W"),
+        UnitSpinnerItem.create(UnitExpression.create(
+        		UnitAndDim.create(MassUnit.T),
+        		UnitAndDim.create(LengthUnit.M, 2),
+        		UnitAndDim.create(TimeUnit.S, -3)), "KW"),
+        UnitSpinnerItem.create(UnitExpression.create(
+        		UnitAndDim.create(MassUnit.KG),
+        		UnitAndDim.create(LengthUnit.KM, 2),
+        		UnitAndDim.create(TimeUnit.S, -3)), "MW")
+	};
+
+	public static final UnitSpinnerItem[] FLUX_DISTANCE = {
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.M), "m"),
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.KM), "km"),
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.AU), "AU"),
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.LY), "ly"),
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.KLY), "kly"),
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(LengthUnit.MLY), "mly")
+    };
+
+	public static final UnitSpinnerItem[] FLUX = {
+        UnitSpinnerItem.create(UnitExpression.create(
+        		UnitAndDim.create(MassUnit.KG),
+        		UnitAndDim.create(TimeUnit.S, -3)), "W/m^2"),
     };
 
 

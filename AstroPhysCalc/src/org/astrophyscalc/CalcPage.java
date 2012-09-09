@@ -15,6 +15,11 @@ public class CalcPage {
 	public static final CalcRow[] KE_VELOCITY = {CalcRow.KE_VELOCITY, CalcRow.KE_MASS, CalcRow.KE_ENERGY};
 	public static final CalcPage KE = CalcPage.create(R.string.kineticPageTitle, KE_MASS, KE_ENERGY, KE_VELOCITY);
 
+	public static final CalcRow[] FLUX_POWER = {CalcRow.FLUX_POWER, CalcRow.FLUX_DISTANCE, CalcRow.FLUX};
+	public static final CalcRow[] FLUX_DISTANCE = {CalcRow.FLUX_DISTANCE, CalcRow.FLUX_POWER, CalcRow.FLUX};
+	public static final CalcRow[] FLUX = {CalcRow.FLUX, CalcRow.FLUX_POWER, CalcRow.FLUX_DISTANCE};
+	public static final CalcPage FLUX_PAGE = CalcPage.create(R.string.fluxPageTitle, FLUX_POWER, FLUX_DISTANCE, FLUX);
+
 	private final int titleStringId;
 	private final List<List<CalcRow>> listOfLists;
 

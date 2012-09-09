@@ -9,6 +9,8 @@ public class CalcRow {
 	private static final ValueAndUnits G = ValueAndUnits.create(6.67E-11d, UnitExpression.create(
 			UnitAndDim.create(LengthUnit.M, 3), UnitAndDim.create(MassUnit.KG, -1), UnitAndDim.create(TimeUnit.S, -2)));
 
+	// Orbits
+
 	private static class OrbitMassCalculator implements Calculator {
 		@Override
 		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
@@ -49,14 +51,14 @@ public class CalcRow {
 			UnitSelector.ORBIT_PERIOD_SELECTOR, UnitSpinnerItem.ORBIT_PERIOD, 4);
 
 
-
+	// Kinetic energy
 
 	private static class KEMassCalculator implements Calculator {
 		@Override
 		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
 			final ValueAndUnits E = vu[0];
 			final ValueAndUnits v = vu[1];
-			return ValueAndUnits.create(2).multiplyBy(E).divideBy(v.pow(2));
+			return ValueAndUnits.create(2d).multiplyBy(E).divideBy(v.pow(2));
 		}
 	}
 
@@ -74,10 +76,9 @@ public class CalcRow {
 		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
 			final ValueAndUnits m = vu[0];
 			final ValueAndUnits E = vu[1];
-			return (ValueAndUnits.create(2).multiplyBy(E).divideBy(m)).pow(1, 2);
+			return (ValueAndUnits.create(2d).multiplyBy(E).divideBy(m)).pow(1, 2);
 		}
 	}
-
 
 	public static final CalcRow KE_MASS = CalcRow.create(
 			R.id.label1, R.string.massLabel, R.id.text1, R.id.units1, new KEMassCalculator(),
@@ -90,6 +91,50 @@ public class CalcRow {
 	public static final CalcRow KE_VELOCITY = CalcRow.create(
 			R.id.label3, R.string.velocityLabel, R.id.text3, R.id.units3, new KEVelocityCalculator(),
 			UnitSelector.KE_VELOCITY_SELECTOR, UnitSpinnerItem.KE_VELOCITY, 0);
+
+
+	// Brightness
+
+	private static class FluxPowerCalculator implements Calculator {
+		@Override
+		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
+			final ValueAndUnits d = vu[0];
+			final ValueAndUnits f = vu[1];
+			return ValueAndUnits.create(4d * Math.PI).multiplyBy(d.pow(2)).multiplyBy(f);
+		}
+	}
+
+	private static class FluxDistanceCalculator implements Calculator {
+		@Override
+		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
+			final ValueAndUnits p = vu[0];
+			final ValueAndUnits f = vu[1];
+			return (p.divideBy(ValueAndUnits.create(4d * Math.PI).multiplyBy(f))).pow(1, 2);
+		}
+	}
+
+	private static class FluxCalculator implements Calculator {
+		@Override
+		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
+			final ValueAndUnits p = vu[0];
+			final ValueAndUnits d = vu[1];
+			return p.divideBy(ValueAndUnits.create(4d * Math.PI).multiplyBy(d.pow(2)));
+		}
+	}
+
+
+	public static final CalcRow FLUX_POWER = CalcRow.create(
+			R.id.label1, R.string.powerLabel, R.id.text1, R.id.units1, new FluxPowerCalculator(),
+			UnitSelector.FLUX_POWER_SELECTOR, UnitSpinnerItem.FLUX_POWER, 0);
+
+	public static final CalcRow FLUX_DISTANCE = CalcRow.create(
+			R.id.label2, R.string.distanceLabel, R.id.text2, R.id.units2, new FluxDistanceCalculator(),
+			UnitSelector.FLUX_DISTANCE_SELECTOR, UnitSpinnerItem.FLUX_DISTANCE, 0);
+
+	public static final CalcRow FLUX = CalcRow.create(
+			R.id.label3, R.string.fluxLabel, R.id.text3, R.id.units3, new FluxCalculator(),
+			UnitSelector.FLUX_SELECTOR, UnitSpinnerItem.FLUX, 0);
+
 
 
 	private final Calculator calculator;

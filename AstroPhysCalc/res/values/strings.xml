@@ -5,12 +5,16 @@
     
     <string name="orbitPageTitle">Orbits</string>
     <string name="kineticPageTitle">Kinetic Energy</string>
+    <string name="fluxPageTitle">Flux and Power</string>
         
     <string name="massLabel">Mass</string>
     <string name="radiusLabel">Radius</string>
+    <string name="distanceLabel">Distance</string>   
     <string name="periodLabel">Period</string>
     <string name="velocityLabel">Velocity</string>
     <string name="energyLabel">Energy</string>
+    <string name="powerLabel">Power</string>    
+    <string name="fluxLabel">Flux</string>    
         
 	<string-array name="timeUnits">
 	    <item>s</item>

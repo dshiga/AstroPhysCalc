@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 public class UnitSelector {
 
+	// Orbits
 	public static final UnitSelector ORBIT_MASS_SELECTOR = UnitSelector.create(
 			UnitSelectionRule.create(UnitExpression.createFromUnit(MassUnit.M_EARTH)),
 			UnitSelectionRule.create(
@@ -28,7 +29,7 @@ public class UnitSelector {
 			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.YEARS)));
 
 
-
+	// Kinetic energy
 	public static final UnitSelector KE_MASS_SELECTOR = UnitSelector.create(
 			UnitSelectionRule.create(UnitExpression.createFromUnit(MassUnit.G)),
 			UnitSelectionRule.create(UnitExpression.createFromUnit(MassUnit.KG)));
@@ -41,6 +42,26 @@ public class UnitSelector {
 	public static final UnitSelector KE_VELOCITY_SELECTOR = UnitSelector.create(
 			UnitSelectionRule.create(UnitExpression.create(UnitAndDim.create(LengthUnit.M),
 			UnitAndDim.create(TimeUnit.S, -1))));
+
+
+	// Brightness
+	public static final UnitSelector FLUX_SELECTOR = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.create(
+					UnitAndDim.create(MassUnit.KG),
+					UnitAndDim.create(TimeUnit.S, -3))));
+
+	public static final UnitSelector FLUX_POWER_SELECTOR = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.create(
+					UnitAndDim.create(MassUnit.KG),
+					UnitAndDim.create(LengthUnit.M, 2),
+					UnitAndDim.create(TimeUnit.S, -3))));
+
+	public static final UnitSelector FLUX_DISTANCE_SELECTOR = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.createFromUnit(LengthUnit.LY)),
+			UnitSelectionRule.create(ValueAndUnits.createFromUnit(1E6d, LengthUnit.KM),
+					UnitExpression.createFromUnit(LengthUnit.AU)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(LengthUnit.KM)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(LengthUnit.M)));
 
 
 	private SortedSet<UnitSelectionRule> rules;
