@@ -8,8 +8,12 @@ public class CalcPage {
 	public static final CalcRow[] ORBIT_MASS = {CalcRow.ORBIT_MASS, CalcRow.ORBIT_RADIUS, CalcRow.ORBIT_PERIOD};
 	public static final CalcRow[] ORBIT_RADIUS = {CalcRow.ORBIT_RADIUS, CalcRow.ORBIT_PERIOD, CalcRow.ORBIT_MASS};
 	public static final CalcRow[] ORBIT_PERIOD = {CalcRow.ORBIT_PERIOD, CalcRow.ORBIT_RADIUS, CalcRow.ORBIT_MASS};
-
 	public static final CalcPage ORBITS = CalcPage.create(R.string.orbitPageTitle, ORBIT_MASS, ORBIT_RADIUS, ORBIT_PERIOD);
+
+	public static final CalcRow[] KE_MASS = {CalcRow.KE_MASS, CalcRow.KE_ENERGY, CalcRow.KE_VELOCITY};
+	public static final CalcRow[] KE_ENERGY = {CalcRow.KE_ENERGY, CalcRow.KE_MASS, CalcRow.KE_VELOCITY};
+	public static final CalcRow[] KE_VELOCITY = {CalcRow.KE_VELOCITY, CalcRow.KE_MASS, CalcRow.KE_ENERGY};
+	public static final CalcPage KE = CalcPage.create(R.string.kineticPageTitle, KE_MASS, KE_ENERGY, KE_VELOCITY);
 
 	private final int titleStringId;
 	private final List<List<CalcRow>> listOfLists;

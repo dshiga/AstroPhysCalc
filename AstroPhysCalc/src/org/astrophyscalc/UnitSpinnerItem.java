@@ -22,6 +22,24 @@ public class UnitSpinnerItem {
         UnitSpinnerItem.create(UnitExpression.createFromUnit(TimeUnit.YEARS), "years")
 	};
 
+
+	public static final UnitSpinnerItem[] KE_MASS = {
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.G), "G"),
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.KG), "KG")
+    };
+
+	public static final UnitSpinnerItem[] KE_ENERGY = {
+        UnitSpinnerItem.create(UnitExpression.create(UnitAndDim.create(MassUnit.KG),
+        		UnitAndDim.create(LengthUnit.M, 2),
+        		UnitAndDim.create(TimeUnit.S, -2)), "Joules")
+    };
+
+	public static final UnitSpinnerItem[] KE_VELOCITY = {
+        UnitSpinnerItem.create(UnitExpression.create(UnitAndDim.create(LengthUnit.M),
+        		UnitAndDim.create(TimeUnit.S, -1)), "m/s")
+    };
+
+
 	private final UnitExpression expr;
 	private final String label;
 

@@ -48,6 +48,50 @@ public class CalcRow {
 			R.id.label3, R.string.periodLabel, R.id.text3, R.id.units3, new OrbitPeriodCalculator(),
 			UnitSelector.ORBIT_PERIOD_SELECTOR, UnitSpinnerItem.ORBIT_PERIOD, 4);
 
+
+
+
+	private static class KEMassCalculator implements Calculator {
+		@Override
+		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
+			final ValueAndUnits E = vu[0];
+			final ValueAndUnits v = vu[1];
+			return ValueAndUnits.create(2).multiplyBy(E).divideBy(v.pow(2));
+		}
+	}
+
+	private static class KEEnergyCalculator implements Calculator {
+		@Override
+		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
+			final ValueAndUnits m = vu[0];
+			final ValueAndUnits v = vu[1];
+			return ValueAndUnits.create(1d/2d).multiplyBy(m).multiplyBy(v.pow(2));
+		}
+	}
+
+	private static class KEVelocityCalculator implements Calculator {
+		@Override
+		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
+			final ValueAndUnits m = vu[0];
+			final ValueAndUnits E = vu[1];
+			return (ValueAndUnits.create(2).multiplyBy(E).divideBy(m)).pow(1, 2);
+		}
+	}
+
+
+	public static final CalcRow KE_MASS = CalcRow.create(
+			R.id.label1, R.string.massLabel, R.id.text1, R.id.units1, new KEMassCalculator(),
+			UnitSelector.KE_MASS_SELECTOR, UnitSpinnerItem.KE_MASS, 1);
+
+	public static final CalcRow KE_ENERGY = CalcRow.create(
+			R.id.label2, R.string.energyLabel, R.id.text2, R.id.units2, new KEEnergyCalculator(),
+			UnitSelector.KE_ENERGY_SELECTOR, UnitSpinnerItem.KE_ENERGY, 0);
+
+	public static final CalcRow KE_VELOCITY = CalcRow.create(
+			R.id.label3, R.string.velocityLabel, R.id.text3, R.id.units3, new KEVelocityCalculator(),
+			UnitSelector.KE_VELOCITY_SELECTOR, UnitSpinnerItem.KE_VELOCITY, 0);
+
+
 	private final Calculator calculator;
 	private final UnitSelector unitSelector;
 	private final int labelStringId;

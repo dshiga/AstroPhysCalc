@@ -27,6 +27,22 @@ public class UnitSelector {
 			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.DAYS)),
 			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.YEARS)));
 
+
+
+	public static final UnitSelector KE_MASS_SELECTOR = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.createFromUnit(MassUnit.G)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(MassUnit.KG)));
+
+	public static final UnitSelector KE_ENERGY_SELECTOR = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.create(UnitAndDim.create(MassUnit.KG),
+							UnitAndDim.create(LengthUnit.M, 2),
+							UnitAndDim.create(TimeUnit.S, -2))));
+
+	public static final UnitSelector KE_VELOCITY_SELECTOR = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.create(UnitAndDim.create(LengthUnit.M),
+			UnitAndDim.create(TimeUnit.S, -1))));
+
+
 	private SortedSet<UnitSelectionRule> rules;
 
 	public static UnitSelector create(final Set<UnitSelectionRule> rules) {

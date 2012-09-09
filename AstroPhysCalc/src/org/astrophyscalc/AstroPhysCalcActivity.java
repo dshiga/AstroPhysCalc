@@ -39,6 +39,7 @@ public class AstroPhysCalcActivity extends Activity {
 
         final List<CalcPage> calcPages = new ArrayList<CalcPage>();
         calcPages.add(CalcPage.ORBITS);
+        calcPages.add(CalcPage.KE);
 
 	    ArrayAdapter<CalcPage> adapter = new PageArrayAdapter(
 	    		getBaseContext(), R.layout.page_spinner_item,

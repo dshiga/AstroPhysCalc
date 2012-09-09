@@ -26,6 +26,9 @@ public class Fraction {
 		if (newNumerator == newDenominator) {
 			return ONE;
 		}
+		if (newNumerator == -newDenominator) {
+			return new Fraction(-1, 1);
+		}
 		if (newNumerator == 0) {
 			return ZERO;
 		}
