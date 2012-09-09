@@ -37,43 +37,64 @@ public class CalcRow {
 	}
 
 	public static final CalcRow ORBIT_MASS = CalcRow.create(
-			R.string.massLabel, new OrbitMassCalculator(), UnitSelector.ORBIT_MASS_SELECTOR,
-			UnitSpinnerItem.ORBIT_MASS, 2);
+			R.id.label1, R.string.massLabel, R.id.text1, R.id.units1, new OrbitMassCalculator(),
+			UnitSelector.ORBIT_MASS_SELECTOR, UnitSpinnerItem.ORBIT_MASS, 2);
 
 	public static final CalcRow ORBIT_RADIUS = CalcRow.create(
-			R.string.radiusLabel, new OrbitRadiusCalculator(), UnitSelector.ORBIT_RADIUS_SELECTOR,
-			UnitSpinnerItem.ORBIT_RADIUS, 1);
+			R.id.label2, R.string.radiusLabel, R.id.text2, R.id.units2, new OrbitRadiusCalculator(),
+			UnitSelector.ORBIT_RADIUS_SELECTOR, UnitSpinnerItem.ORBIT_RADIUS, 1);
 
 	public static final CalcRow ORBIT_PERIOD = CalcRow.create(
-			R.string.periodLabel, new OrbitPeriodCalculator(), UnitSelector.ORBIT_PERIOD_SELECTOR,
-			UnitSpinnerItem.ORBIT_PERIOD, 4);
+			R.id.label3, R.string.periodLabel, R.id.text3, R.id.units3, new OrbitPeriodCalculator(),
+			UnitSelector.ORBIT_PERIOD_SELECTOR, UnitSpinnerItem.ORBIT_PERIOD, 4);
 
 	private final Calculator calculator;
 	private final UnitSelector unitSelector;
-	private final int textLabelId;
+	private final int labelStringId;
+	private final int labelId;
+	private final int textId;
+	private final int spinnerId;
 	private final List<UnitSpinnerItem> spinnerItems;
 	private final int defaultSpinnerPos;
 
-	public static CalcRow create(final int textLabelId, final Calculator calculator, final UnitSelector unitSelector,
+	public static CalcRow create(final int labelId, final int labelStringId, final int textId, final int spinnerId,
+			final Calculator calculator, final UnitSelector unitSelector,
 			UnitSpinnerItem[] spinnerItems, final int defaultSpinnerPos) {
 		final List<UnitSpinnerItem> spinnerItemList = new ArrayList<UnitSpinnerItem>();
 		for (UnitSpinnerItem item: spinnerItems) {
 			spinnerItemList.add(item);
 		}
-		return new CalcRow(textLabelId, calculator, unitSelector, spinnerItemList, defaultSpinnerPos);
+		return new CalcRow(labelId, labelStringId, textId, spinnerId, calculator, unitSelector,
+				spinnerItemList, defaultSpinnerPos);
 	}
 
-	private CalcRow(final int textLabelId, final Calculator calculator, final UnitSelector unitSelector,
+	private CalcRow(final int labelId, final int labelStringId, final int textId, final int spinnerId,
+			final Calculator calculator, final UnitSelector unitSelector,
 			final List<UnitSpinnerItem> spinnerItems, final int defaultSpinnerPos) {
-		this.textLabelId = textLabelId;
+		this.labelId = labelId;
+		this.labelStringId = labelStringId;
+		this.textId = textId;
+		this.spinnerId = spinnerId;
 		this.calculator = calculator;
 		this.unitSelector = unitSelector;
 		this.spinnerItems = spinnerItems;
 		this.defaultSpinnerPos = defaultSpinnerPos;
 	}
 
-	public int getTextLabel() {
-		return textLabelId;
+	public int getLabelId() {
+		return labelId;
+	}
+
+	public int getLabelStringId() {
+		return labelStringId;
+	}
+
+	public int getTextId() {
+		return textId;
+	}
+
+	public int getSpinnerId() {
+		return spinnerId;
 	}
 
 	private Calculator getCalculator() {
