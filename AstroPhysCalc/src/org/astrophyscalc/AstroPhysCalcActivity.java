@@ -44,13 +44,16 @@ public class AstroPhysCalcActivity extends Activity {
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
+
+		// Set layout
         setContentView(R.layout.main);
 
 
-        // Set up button click listeners
+        setTextBoxLabels(R.string.massLabel, R.string.radiusLabel, R.string.periodLabel);
 
+
+        // Set up button click listeners
         OnClickListener buttonListener1 = new OnClickListener() {
         	public void onClick(View v) {
         		onCalcMassClicked(v);
@@ -110,19 +113,41 @@ public class AstroPhysCalcActivity extends Activity {
         	}
         };
 
-        setSpinnersToDefaults(2, 1, 4);
+        setSpinnersToPositions(2, 1, 4);
         enableSpinnerChangeListeners();
     }
 
-	void setSpinnersToDefaults(final int default1, final int default2, final int default3) {
+
+	/**
+	 * Set the labels above each of the TextViews.
+	 */
+	void setTextBoxLabels(final int stringId1, final int stringId2, final int stringId3) {
+        TextView text1 = (TextView) findViewById(R.id.label1);
+        text1.setText(stringId1);
+
+        TextView text2 = (TextView) findViewById(R.id.label2);
+        text2.setText(stringId2);
+
+        TextView text3 = (TextView) findViewById(R.id.label3);
+        text3.setText(stringId3);
+	}
+
+	/**
+	 * Set each of the three spinners to the given positions.
+	 *
+	 * @param position1
+	 * @param default2
+	 * @param default3
+	 */
+	void setSpinnersToPositions(final int position1, final int position2, final int position3) {
         Spinner unitSpinner1 = (Spinner) findViewById(R.id.units1);
-		unitSpinner1.setSelection(default1);
+		unitSpinner1.setSelection(position1);
 
         Spinner unitSpinner2 = (Spinner) findViewById(R.id.units2);
-		unitSpinner2.setSelection(default2);
+		unitSpinner2.setSelection(position2);
 
         Spinner unitSpinner3 = (Spinner) findViewById(R.id.units3);
-        unitSpinner3.setSelection(default3);
+        unitSpinner3.setSelection(position3);
 	}
 
 

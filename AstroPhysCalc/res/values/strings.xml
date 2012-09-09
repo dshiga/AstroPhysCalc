@@ -2,6 +2,11 @@
 <resources>
 
     <string name="app_name">AstroPhysCalc</string>
+    
+    <string name="massLabel">Mass</string>
+    <string name="radiusLabel">Radius</string>
+    <string name="periodLabel">Period</string>
+        
 	<string-array name="timeUnits">
 	    <item>s</item>
 	    <item>minutes</item>
