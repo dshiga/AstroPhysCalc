@@ -16,20 +16,20 @@
         android:orientation="horizontal">
     
 	    <EditText
-	        android:id="@+id/mass"
+	        android:id="@+id/text1"
 	        android:layout_width="@dimen/textBox"
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"/>
 	    
 	    <Spinner
-	        android:id="@+id/massUnits"
+	        android:id="@+id/units1"
 	        android:layout_width="@dimen/spinner"
 	        android:layout_height="wrap_content"
 	        android:entries="@array/massUnits"
 	        />
 	    
 	    <Button
-	        android:id="@+id/massBtn"
+	        android:id="@+id/button1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="5dp"
@@ -48,20 +48,20 @@
         android:orientation="horizontal">
     
 	    <EditText
-	        android:id="@+id/radius"
+	        android:id="@+id/text2"
 	        android:layout_width="@dimen/textBox"
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"/>
 	    
 	    <Spinner
-	        android:id="@+id/radiusUnits"
+	        android:id="@+id/units2"
 	        android:layout_width="@dimen/spinner"
 	        android:layout_height="wrap_content"
 	        android:entries="@array/lengthUnits"
 	        />	    
 	    
 	    <Button
-	        android:id="@+id/radiusBtn"
+	        android:id="@+id/button2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="5dp"
@@ -81,20 +81,20 @@
         android:orientation="horizontal">    
     
 	    <EditText
-	        android:id="@+id/period"
+	        android:id="@+id/text3"
 	        android:layout_width="@dimen/textBox"
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"/>
 	    
 	    <Spinner
-	        android:id="@+id/periodUnits"
+	        android:id="@+id/units3"
 	        android:layout_width="@dimen/spinner"
 	        android:layout_height="wrap_content"
 	        android:entries="@array/timeUnits"
 	        />
 	    
 	    <Button
-        	android:id="@+id/periodBtn"
+        	android:id="@+id/button3"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:layout_marginLeft="5dp"
