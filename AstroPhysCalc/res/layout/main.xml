@@ -8,18 +8,39 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mass (solar)" />
-    
-    <EditText
-        android:id="@+id/mass"
-        android:layout_width="100dp"
+        android:text="Mass" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"/>
+        android:orientation="horizontal">
+    
+	    <EditText
+	        android:id="@+id/mass"
+	        android:layout_width="@dimen/textBox"
+	        android:layout_height="wrap_content"
+	        android:inputType="numberDecimal"/>
+	    
+	    <Spinner
+	        android:id="@+id/massUnits"
+	        android:layout_width="@dimen/spinner"
+	        android:layout_height="wrap_content"
+	        android:entries="@array/massUnits"
+	        />
+	    
+	    <Button
+	        android:id="@+id/massBtn"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="5dp"
+	        android:text="Calculate"
+	        />	    
+	</LinearLayout>    
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Radius (au)" />    
+        android:text="Radius" />    
     
     <LinearLayout
         android:layout_width="fill_parent"
@@ -28,9 +49,16 @@
     
 	    <EditText
 	        android:id="@+id/radius"
-	        android:layout_width="100dp"
+	        android:layout_width="@dimen/textBox"
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"/>
+	    
+	    <Spinner
+	        android:id="@+id/radiusUnits"
+	        android:layout_width="@dimen/spinner"
+	        android:layout_height="wrap_content"
+	        android:entries="@array/lengthUnits"
+	        />	    
 	    
 	    <Button
 	        android:id="@+id/radiusBtn"
@@ -54,13 +82,13 @@
     
 	    <EditText
 	        android:id="@+id/period"
-	        android:layout_width="100dp"
+	        android:layout_width="@dimen/textBox"
 	        android:layout_height="wrap_content"
 	        android:inputType="numberDecimal"/>
 	    
 	    <Spinner
 	        android:id="@+id/periodUnits"
-	        android:layout_width="120dp"
+	        android:layout_width="@dimen/spinner"
 	        android:layout_height="wrap_content"
 	        android:entries="@array/timeUnits"
 	        />

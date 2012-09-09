@@ -9,7 +9,7 @@ public enum LengthUnit implements Unit {
 	CM("cm", 1E-2d),
 	M("m", 1d),
 	KM("km", 1E3d),
-	AU("au", 1.5E11d),
+	AU("AU", 1.49598E11d),
 	LY("ly", 9.46E15),
 	KLY("kly", 9.46E18),
 	MLY("mly", 9.46E21),
@@ -22,6 +22,16 @@ public enum LengthUnit implements Unit {
 	LengthUnit(final String name, final double ratioToBase) {
 		this.name = name;
 		this.ratioToBase = ratioToBase;
+	}
+
+	public static LengthUnit getUnit(final String name) {
+		LengthUnit[] units = LengthUnit.values();
+		for (LengthUnit unit : units) {
+			if (unit.getName().equals(name)) {
+				return unit;
+			}
+		}
+		return null;
 	}
 
 	@Override

@@ -1,13 +1,16 @@
 package org.astrophyscalc;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 
-public class ValueAndUnits {
+public class ValueAndUnits implements Comparable<ValueAndUnits> {
 
-	final private double value;
-	final private UnitExpression unitExpression;
+	private final double value;
+	private final UnitExpression unitExpression;
+	private final ValueAndUnitsComparator comparator = new ValueAndUnitsComparator();
 
 	final static String UNIT_EXPRESSION_NULL = "Units cannot be null";
 	final static String DIFFERENT_NUMBER_UNITS = "UnitExpressions must contain the same number of units.";
@@ -70,6 +73,13 @@ public class ValueAndUnits {
 		return unitExpression.toBase();
 	}
 
+	public String getUnitName() {
+		if (!isSingleUnitDimOne()) {
+			return null;
+		}
+		return getUnitExpression().getUnitName();
+	}
+
 	public ValueAndUnits toSameUnitsAs(final ValueAndUnits value2) {
 		if (!unitExpression.isSameNumberOfUnits(value2.getUnitExpression())) {
 			throw new IllegalArgumentException(DIFFERENT_NUMBER_UNITS);
@@ -81,6 +91,14 @@ public class ValueAndUnits {
 		final double conversion = getConversionFactorTo(value2);
 		final ValueAndUnits newValueAndUnits = ValueAndUnits.create(getValue() * conversion, value2.getUnitExpression());
 		return newValueAndUnits;
+	}
+
+	public ValueAndUnits toSameUnitsAs(final UnitExpression expr2) {
+		return toSameUnitsAs(ValueAndUnits.create(1d, expr2));
+	}
+
+	public ValueAndUnits toBaseUnits() {
+		return toSameUnitsAs(getBaseUnitExpression());
 	}
 
 	/**
@@ -210,4 +228,66 @@ public class ValueAndUnits {
 		return ValueAndUnits.class.getSimpleName() + ": " + value + ", "+ unitExpression.toString();
 	}
 
+	public boolean isLessThan(final ValueAndUnits vu) {
+		return comparator.compare(this, vu) < 0;
+	}
+
+	public boolean isGreaterThan(final ValueAndUnits vu) {
+		return comparator.compare(this, vu) > 0;
+	}
+
+	public ValueAndUnits toBestUnits(final Set<UnitExpression> exprs) {
+		final TreeSet<ValueAndUnits> limitSet = new TreeSet<ValueAndUnits>(new ValueAndUnitsDescComparator());
+		for (UnitExpression expr: exprs) {
+			limitSet.add(ValueAndUnits.create(1d, expr));
+		}
+
+		for (ValueAndUnits vu: limitSet) {
+			if (!unitExpression.isSameNumberOfUnits(vu.getUnitExpression())) {
+				throw new IllegalArgumentException(DIFFERENT_NUMBER_UNITS);
+			}
+			if (!unitExpression.isCompatibleUnits(vu.getUnitExpression())) {
+				throw new IllegalArgumentException(INCOMPATIBLE_UNIT_EXPRESSIONS);
+			}
+
+			if (!isLessThan(vu)) {
+				return toSameUnitsAs(vu);
+			}
+		}
+		return toSameUnitsAs(limitSet.last());
+
+	}
+
+	private static class ValueAndUnitsComparator implements Comparator<ValueAndUnits> {
+		@Override
+		public int compare(ValueAndUnits lhs, ValueAndUnits rhs) {
+			final double diff = lhs.subtract(rhs).getValue();
+			if (diff < 0) {
+				return -1;
+			}
+			else if (diff > 0) {
+				return 1;
+			}
+			return 0;
+		}
+	}
+
+	private static class ValueAndUnitsDescComparator implements Comparator<ValueAndUnits> {
+		@Override
+		public int compare(ValueAndUnits lhs, ValueAndUnits rhs) {
+			final double diff = rhs.subtract(lhs).getValue();
+			if (diff < 0) {
+				return -1;
+			}
+			else if (diff > 0) {
+				return 1;
+			}
+			return 0;
+		}
+	}
+
+	@Override
+	public int compareTo(ValueAndUnits vu2) {
+		return comparator.compare(this, vu2);
+	}
 }

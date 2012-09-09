@@ -4,9 +4,22 @@
     <string name="app_name">AstroPhysCalc</string>
 	<string-array name="timeUnits">
 	    <item>s</item>
-	    <item>days</item>
+	    <item>minutes</item>
+	    <item>hours</item>
+	  	<item>days</item>
 	    <item>years</item>
 	</string-array>
-        
+	
+	<string-array name="lengthUnits">
+	    <item>km</item>
+	    <item>AU</item>
+	    <item>ly</item>
+	</string-array>
+	
+	<string-array name="massUnits">
+	    <item>Earths</item>
+	    <item>Jupiters</item>
+	    <item>Suns</item>
+	</string-array>
         
 </resources>

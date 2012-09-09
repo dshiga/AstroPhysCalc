@@ -8,9 +8,9 @@ public enum MassUnit implements Unit {
 	MG("mg", 1E-6d),
 	G("g", 1E-3d),
 	KG("kg", 1d),
-	M_EARTH("M_Earth", 5.97219E24d),
-	M_JUP("M_Jup", 1.89813E27d),
-	M_SUN("M_Sun", 2E30d);
+	M_EARTH("Earths", 5.97219E24d),
+	M_JUP("Jupiters", 1.89813E27d),
+	M_SUN("Suns", 1.989E30d);
 
 	private final String name;
 	private final double ratioToBase;
@@ -19,6 +19,16 @@ public enum MassUnit implements Unit {
 	MassUnit(final String name, final double ratioToBase) {
 		this.name = name;
 		this.ratioToBase = ratioToBase;
+	}
+
+	public static MassUnit getUnit(final String name) {
+		MassUnit[] units = MassUnit.values();
+		for (MassUnit unit : units) {
+			if (unit.getName().equals(name)) {
+				return unit;
+			}
+		}
+		return null;
 	}
 
 	@Override

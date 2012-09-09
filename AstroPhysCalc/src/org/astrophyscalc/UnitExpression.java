@@ -128,6 +128,13 @@ public class UnitExpression {
 		return size() == expr2.size();
 	}
 
+	public String getUnitName() {
+		if (!isSingleUnitDimOne()) {
+			return null;
+		}
+		return units.iterator().next().getUnitName();
+	}
+
 	/**
 	 * Raises each item in the UnitExpression to the given power.
 	 *

@@ -1,5 +1,8 @@
 package org.astrophyscalc;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class UnitAndDim {
 
 	private final Unit unit;
@@ -54,6 +57,14 @@ public class UnitAndDim {
 		this.dim = Dimension.create(numerator, denominator);
 	}
 
+	public static Set<UnitAndDim> getSet(final Set<Unit> units) {
+		Set<UnitAndDim> unitSet = new HashSet<UnitAndDim>();
+		for (Unit unit: units) {
+			unitSet.add(UnitAndDim.create(unit));
+		}
+		return unitSet;
+	}
+
 	public Unit getUnit() {
 		return unit;
 	}
@@ -68,6 +79,10 @@ public class UnitAndDim {
 
 	public boolean isDimensionZero() {
 		return dim.isZero();
+	}
+
+	public String getUnitName() {
+		return unit.getName();
 	}
 
 	public UnitAndDim toBase() {

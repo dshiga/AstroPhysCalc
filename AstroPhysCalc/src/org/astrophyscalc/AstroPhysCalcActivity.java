@@ -15,10 +15,18 @@ public class AstroPhysCalcActivity extends Activity {
 
 	final ValueAndUnits G = ValueAndUnits.create(6.67E-11d, UnitExpression.create(
 			UnitAndDim.create(LengthUnit.M, 3), UnitAndDim.create(MassUnit.KG, -1), UnitAndDim.create(TimeUnit.S, -2)));
-	final double M_SUN = 1.989E30d;
-	final double AU = 1.49598E11d;
-	final double DAY = 86400d;
-	final double YEAR = 365d * DAY;
+	final UnitSelector radiusSelector = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.createFromUnit(LengthUnit.LY)),
+			UnitSelectionRule.create(
+					ValueAndUnits.createFromUnit(1E6d, LengthUnit.KM), UnitExpression.createFromUnit(LengthUnit.AU)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(LengthUnit.KM)));
+
+	final UnitSelector massSelector = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.createFromUnit(MassUnit.M_EARTH)),
+			UnitSelectionRule.create(
+					ValueAndUnits.createFromUnit(0.1d, MassUnit.M_JUP), UnitExpression.createFromUnit(MassUnit.M_JUP)),
+			UnitSelectionRule.create(
+					ValueAndUnits.createFromUnit(0.01d, MassUnit.M_SUN), UnitExpression.createFromUnit(MassUnit.M_SUN)));
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +49,48 @@ public class AstroPhysCalcActivity extends Activity {
         Button radiusButton = (Button) findViewById(R.id.radiusBtn);
         radiusButton.setOnClickListener(radiusListener);
 
-        OnItemSelectedListener spinnerListener = new OnItemSelectedListener() {
+        OnClickListener massListener = new OnClickListener() {
+        	public void onClick(View v) {
+        		onCalcMassClicked(v);
+        	}
+        };
+        Button massButton = (Button) findViewById(R.id.massBtn);
+        massButton.setOnClickListener(massListener);
+
+        Spinner massSpinner = (Spinner) findViewById(R.id.massUnits);
+		massSpinner.setSelection(2);
+
+        OnItemSelectedListener massUnitsListener = new OnItemSelectedListener() {
+        	@Override
+        	public void onItemSelected(AdapterView<?> adapterView, View selectedView, int position, long id) {
+        		onMassUnitChanged(adapterView, position);
+        	}
+
+        	@Override
+        	public void onNothingSelected(AdapterView<?> v) {
+        	}
+        };
+        massSpinner.setOnItemSelectedListener(massUnitsListener);
+
+        Spinner radiusSpinner = (Spinner) findViewById(R.id.radiusUnits);
+		radiusSpinner.setSelection(1);
+
+        OnItemSelectedListener radiusUnitsListener = new OnItemSelectedListener() {
+        	@Override
+        	public void onItemSelected(AdapterView<?> adapterView, View selectedView, int position, long id) {
+        		onRadiusUnitChanged(adapterView, position);
+        	}
+
+        	@Override
+        	public void onNothingSelected(AdapterView<?> v) {
+        	}
+        };
+        radiusSpinner.setOnItemSelectedListener(radiusUnitsListener);
+
+        Spinner periodSpinner = (Spinner) findViewById(R.id.periodUnits);
+        periodSpinner.setSelection(4);
+
+        OnItemSelectedListener periodUnitsListener = new OnItemSelectedListener() {
         	@Override
         	public void onItemSelected(AdapterView<?> adapterView, View selectedView, int position, long id) {
         		onPeriodUnitChanged(adapterView, position);
@@ -49,78 +98,232 @@ public class AstroPhysCalcActivity extends Activity {
 
         	@Override
         	public void onNothingSelected(AdapterView<?> v) {
-
         	}
         };
-
-        Spinner spinner1 = (Spinner) findViewById(R.id.periodUnits);
-        spinner1.setOnItemSelectedListener(spinnerListener);
+        periodSpinner.setOnItemSelectedListener(periodUnitsListener);
     }
 
-	void onCalcPeriodClicked(View v) {
-		TextView text1 = (TextView) findViewById(R.id.mass);
-		String massText = (String) text1.getText().toString();
-		Double mass = getTextValue(massText);
+	Double getValueFromTextView(final int textViewId) {
+		TextView text1 = (TextView) findViewById(textViewId);
+		String textValue = (String) text1.getText().toString();
+		return getDouble(textValue);
+	}
 
-		TextView text2 = (TextView) findViewById(R.id.radius);
-		String radiusText = (String) text2.getText().toString();
-		Double radius = getTextValue(radiusText);
+	String getStringFromSpinner(final int spinnerId) {
+		Spinner spinner1 = (Spinner) findViewById(spinnerId);
+		return (String) spinner1.getSelectedItem();
+	}
 
-		if (!hasValue(radius) || !hasValue(mass)) {
+	ValueAndUnits getPeriod() {
+		// Get input values
+		Double massValue = getValueFromTextView(R.id.mass);
+		Double radiusValue = getValueFromTextView(R.id.radius);
+		if (!hasValue(radiusValue) || !hasValue(massValue)) {
+			return null;
+		}
+
+		// Get input units
+		String radiusUnitsText = getStringFromSpinner(R.id.radiusUnits);
+		final LengthUnit radiusUnit = LengthUnit.getUnit(radiusUnitsText);
+		String massUnitsText = getStringFromSpinner(R.id.massUnits);
+		final MassUnit massUnit = MassUnit.getUnit(massUnitsText);
+		if (massUnit == null || radiusUnit == null) {
+			return null;
+		}
+
+		// Inputs
+		final ValueAndUnits radius = ValueAndUnits.createFromUnit(radiusValue, radiusUnit);
+		final ValueAndUnits mass = ValueAndUnits.createFromUnit(massValue, massUnit);
+
+		// Calculate period
+		return calculatePeriod(radius, mass);
+	}
+
+	ValueAndUnits getRadius() {
+		// Get input values
+		Double massValue = getValueFromTextView(R.id.mass);
+		Double periodValue = getValueFromTextView(R.id.period);
+		if (!hasValue(periodValue) || !hasValue(massValue)) {
+			return null;
+		}
+
+		// Get input units
+		String periodUnitsText = getStringFromSpinner(R.id.periodUnits);
+		final TimeUnit periodUnit = TimeUnit.getUnit(periodUnitsText);
+		String massUnitsText = getStringFromSpinner(R.id.massUnits);
+		final MassUnit massUnit = MassUnit.getUnit(massUnitsText);
+		if (massUnit == null || periodUnit == null) {
+			return null;
+		}
+
+		// Inputs
+		final ValueAndUnits period = ValueAndUnits.createFromUnit(periodValue, periodUnit);
+		final ValueAndUnits mass = ValueAndUnits.createFromUnit(massValue, massUnit);
+
+		// Calculate radius
+		return calculateRadius(period, mass);
+	}
+
+
+	ValueAndUnits getMass() {
+		// Get input values
+		Double periodValue = getValueFromTextView(R.id.period);
+		Double radiusValue = getValueFromTextView(R.id.radius);
+		if (!hasValue(periodValue) || !hasValue(radiusValue)) {
+			return null;
+		}
+
+		// Get input units
+		String radiusUnitsText = getStringFromSpinner(R.id.radiusUnits);
+		final LengthUnit radiusUnit = LengthUnit.getUnit(radiusUnitsText);
+		String periodUnitsText = getStringFromSpinner(R.id.periodUnits);
+		final TimeUnit periodUnit = TimeUnit.getUnit(periodUnitsText);
+		if (radiusUnit == null || periodUnit == null) {
+			return null;
+		}
+
+		// Inputs
+		final ValueAndUnits period = ValueAndUnits.createFromUnit(periodValue, periodUnit);
+		final ValueAndUnits radius = ValueAndUnits.createFromUnit(radiusValue, radiusUnit);
+
+		// Calculate radius
+		return calculateMass(radius, period);
+	}
+
+	void onCalcMassClicked(View v) {
+		ValueAndUnits mass = getMass();
+		if (mass == null) {
 			return;
 		}
 
-		ValueAndUnits period = getPeriod(radius, mass);
-		//period = period.toSameUnitsAs(ValueAndUnits.createFromUnit(period.getValue(), TimeUnit.DAYS));
-		Unit bestUnit = UnitUtil.getBestUnit(period, TimeUnit.getAll());
-		period = period.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, bestUnit));
+		// Convert to preferred units
+		mass = mass.toSameUnitsAs(massSelector.getPreferredUnits(mass));
 
-		final TextView text3 = (TextView) findViewById(R.id.period);
-		setText(text3, period.getValue());
+		// Fill in text box
+		final TextView text3 = (TextView) findViewById(R.id.mass);
+		setText(text3, mass.getValue());
 
-		//Iterator<UnitAndDim> iterator = period.getUnitExpression().getUnits().iterator();
-		//Unit unit = iterator.next().getUnit();
-		Spinner spinner1 = (Spinner) findViewById(R.id.periodUnits);
+		// Set units spinner
+		final String unitName = mass.getUnitName();
+		Spinner spinner1 = (Spinner) findViewById(R.id.massUnits);
 		for (int i = 0; i < spinner1.getCount(); i++) {
 			String s = (String) spinner1.getItemAtPosition(i);
-			if (bestUnit.getName().equals(s)) {
+			if (unitName.equals(s)) {
 				spinner1.setSelection(i);
 				break;
 			}
 		}
 	}
 
-	void onCalcRadiusClicked(View v) {
-		TextView text1 = (TextView) findViewById(R.id.mass);
-		String massText = (String) text1.getText().toString();
-		Double mass = getTextValue(massText);
+	void onMassUnitChanged(final AdapterView<? extends Adapter> adapterView, final int position) {
+		ValueAndUnits mass = getMass();
+		if (mass == null) {
+			return;
+		}
 
-		TextView text2 = (TextView) findViewById(R.id.period);
-		String periodText = (String) text2.getText().toString();
-		Double periodValue = getTextValue(periodText);
+		// Convert to units in spinner
+		final String unitName = (String) adapterView.getItemAtPosition(position);
+		Unit unit = MassUnit.getUnit(unitName);
+		if (unit == null) {
+			return;
+		}
+		mass = mass.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, unit));
 
+		// Fill in text box
+		final TextView text3 = (TextView) findViewById(R.id.mass);
+		setText(text3, mass.getValue());
+	}
+
+	void onCalcPeriodClicked(View v) {
+		ValueAndUnits period = getPeriod();
+		if (period == null) {
+			return;
+		}
+
+		// Convert to preferred units
+		period = period.toBestUnits(UnitUtil.getTimeExpressions(
+				TimeUnit.S, TimeUnit.MIN, TimeUnit.HR, TimeUnit.DAYS, TimeUnit.YEARS));
+
+		// Fill in text box
+		final TextView text3 = (TextView) findViewById(R.id.period);
+		setText(text3, period.getValue());
+
+		// Set units spinner
+		final String unitName = period.getUnitName();
 		Spinner spinner1 = (Spinner) findViewById(R.id.periodUnits);
-		String periodUnitsText = (String) spinner1.getSelectedItem();
+		for (int i = 0; i < spinner1.getCount(); i++) {
+			String s = (String) spinner1.getItemAtPosition(i);
+			if (unitName.equals(s)) {
+				spinner1.setSelection(i);
+				break;
+			}
+		}
+	}
 
-		if (!hasValue(periodValue) || !hasValue(mass)) {
+	void onPeriodUnitChanged(final AdapterView<? extends Adapter> adapterView, final int position) {
+		ValueAndUnits period = getPeriod();
+		if (period == null) {
 			return;
 		}
 
-		final TimeUnit periodUnit = TimeUnit.getUnit(periodUnitsText);
-		if (periodUnit == null) {
+		// Convert to units in spinner
+		final String unitName = (String) adapterView.getItemAtPosition(position);
+		Unit unit = TimeUnit.getUnit(unitName);
+		if (unit == null) {
+			return;
+		}
+		period = period.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, unit));
+
+		// Fill in text box
+		final TextView text3 = (TextView) findViewById(R.id.period);
+		setText(text3, period.getValue());
+	}
+
+	void onCalcRadiusClicked(View v) {
+		ValueAndUnits radius = getRadius();
+		if (radius == null) {
 			return;
 		}
 
-		ValueAndUnits period = ValueAndUnits.createFromUnit(periodValue, periodUnit);
+		// Convert to preferred units
+		radius = radius.toSameUnitsAs(radiusSelector.getPreferredUnits(radius));
 
-		ValueAndUnits radius = getRadius(period, mass);
-		radius = radius.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, LengthUnit.AU));
+		// Fill in text box
+		final TextView text3 = (TextView) findViewById(R.id.radius);
+		setText(text3, radius.getValue());
 
+		// Set spinner to correct unit
+		final String unitName = radius.getUnitName();
+		Spinner radiusSpinner = (Spinner) findViewById(R.id.radiusUnits);
+		for (int i = 0; i < radiusSpinner.getCount(); i++) {
+			String s = (String) radiusSpinner.getItemAtPosition(i);
+			if (unitName.equals(s)) {
+				radiusSpinner.setSelection(i);
+				break;
+			}
+		}
+	}
+
+	void onRadiusUnitChanged(final AdapterView<? extends Adapter> adapterView, final int position) {
+		ValueAndUnits radius = getRadius();
+		if (radius == null) {
+			return;
+		}
+
+		// Convert to units in spinner
+		final String unitName = (String) adapterView.getItemAtPosition(position);
+		Unit unit = LengthUnit.getUnit(unitName);
+		if (unit == null) {
+			return;
+		}
+		radius = radius.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, unit));
+
+		// Fill in text box
 		final TextView text3 = (TextView) findViewById(R.id.radius);
 		setText(text3, radius.getValue());
 	}
 
-	Double getTextValue(final String text) {
+	Double getDouble(final String text) {
 		if (text == null || text.length() == 0) {
 			return Double.NaN;
 		}
@@ -132,21 +335,16 @@ public class AstroPhysCalcActivity extends Activity {
 		textView.setText(displayText);
 	}
 
-	ValueAndUnits getPeriod(final double radiusValue, final double massValue) {
-		//return 2d * Math.PI * p(p(radius * AU, 3d) / (G * mass * M_SUN), 1d / 2d);
-
-		final ValueAndUnits r = ValueAndUnits.createFromUnit(radiusValue, LengthUnit.AU);
-		final ValueAndUnits m = ValueAndUnits.createFromUnit(massValue, MassUnit.M_SUN);
-
+	ValueAndUnits calculatePeriod(final ValueAndUnits r, final ValueAndUnits m) {
 		return ValueAndUnits.create(2d * Math.PI).multiplyBy((r.pow(3).divideBy(G.multiplyBy(m))).pow(1, 2));
 	}
 
-	ValueAndUnits getRadius(final ValueAndUnits T, final double massValue) {
+	ValueAndUnits calculateRadius(final ValueAndUnits T, final ValueAndUnits m) {
+		return G.multiplyBy(m.multiplyBy(T.pow(2))).divideBy(ValueAndUnits.create(4d * Math.pow(Math.PI, 2))).pow(1, 3);
+	}
 
-		final ValueAndUnits M = ValueAndUnits.createFromUnit(massValue, MassUnit.M_SUN);
-
-		return G.multiplyBy(M.multiplyBy(T.pow(2))).divideBy(ValueAndUnits.create(4d * Math.pow(Math.PI, 2))).pow(1, 3);
-
+	ValueAndUnits calculateMass(final ValueAndUnits radius, final ValueAndUnits T) {
+		return ValueAndUnits.create(4d * Math.pow(Math.PI, 2d)).multiplyBy(radius.pow(3)).divideBy(G.multiplyBy(T.pow(2)));
 	}
 
 	boolean hasValue(final Double d) {
@@ -160,32 +358,6 @@ public class AstroPhysCalcActivity extends Activity {
 
 	double p(final double x, final double y) {
 		return Math.pow(x, y);
-	}
-
-	void onPeriodUnitChanged(final AdapterView<? extends Adapter> adapterView, final int position) {
-		TextView text1 = (TextView) findViewById(R.id.mass);
-		String massText = (String) text1.getText().toString();
-		Double mass = getTextValue(massText);
-
-		TextView text2 = (TextView) findViewById(R.id.radius);
-		String radiusText = (String) text2.getText().toString();
-		Double radius = getTextValue(radiusText);
-
-		if (!hasValue(radius) || !hasValue(mass)) {
-			return;
-		}
-
-		ValueAndUnits period = getPeriod(radius, mass);
-
-		final String unitName = (String) adapterView.getItemAtPosition(position);
-		Unit unit = TimeUnit.getUnit(unitName);
-		if (unit == null) {
-			return;
-		}
-		period = period.toSameUnitsAs(ValueAndUnits.createFromUnit(1d, unit));
-
-		final TextView text3 = (TextView) findViewById(R.id.period);
-		setText(text3, period.getValue());
 	}
 
 }

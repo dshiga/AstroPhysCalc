@@ -9,6 +9,8 @@ public enum TimeUnit implements Unit {
 	MIC_S("micro s", 1E-6d),
 	MS("ms", 1E-3d),
 	S("s", 1d),
+	MIN("minutes", 60d),
+	HR("hours", 3600d),
 	DAYS("days", 86400d),
 	YEARS("years", 365d * 86400d);
 
