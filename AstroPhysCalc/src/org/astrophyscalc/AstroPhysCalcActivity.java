@@ -28,6 +28,13 @@ public class AstroPhysCalcActivity extends Activity {
 			UnitSelectionRule.create(
 					ValueAndUnits.createFromUnit(0.01d, MassUnit.M_SUN), UnitExpression.createFromUnit(MassUnit.M_SUN)));
 
+	final UnitSelector periodSelector = UnitSelector.create(
+			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.S)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.MIN)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.HR)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.DAYS)),
+			UnitSelectionRule.create(UnitExpression.createFromUnit(TimeUnit.YEARS)));
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -241,8 +248,7 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Convert to preferred units
-		period = period.toBestUnits(UnitUtil.getTimeExpressions(
-				TimeUnit.S, TimeUnit.MIN, TimeUnit.HR, TimeUnit.DAYS, TimeUnit.YEARS));
+		period = period.toSameUnitsAs(periodSelector.getPreferredUnits(period));
 
 		// Fill in text box
 		final TextView text3 = (TextView) findViewById(R.id.period);
