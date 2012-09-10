@@ -214,23 +214,19 @@ public class AstroPhysCalcActivity extends Activity {
         unitSpinner.setOnItemSelectedListener(listener);
 	}
 
-	void disableSpinnerChangeListeners() {
-
-	}
-
 	Double getValueFromTextView(final int textViewId) {
 		TextView text1 = (TextView) findViewById(textViewId);
 		String textValue = (String) text1.getText().toString();
 		return getDouble(textValue);
 	}
 
-	UnitExpression getUnitsFromSpinner(final int spinnerId) {
+	ValueAndUnits getValueAndUnitsFromSpinner(final int spinnerId) {
 		Spinner spinner1 = (Spinner) findViewById(spinnerId);
 		UnitSpinnerItem item = (UnitSpinnerItem) spinner1.getSelectedItem();
 		if (item == null) {
 			return null;
 		}
-		return item.getUnitExpression();
+		return item.getValueAndUnits();
 	}
 
 	void onCalcClicked(final View v, final List<CalcRow> rows) {
@@ -245,15 +241,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Get input units
-		UnitExpression inputUnits1 = getUnitsFromSpinner(inputRow1.getSpinnerId());
-		UnitExpression inputUnits2 = getUnitsFromSpinner(inputRow2.getSpinnerId());
-		if (inputUnits2 == null || inputUnits1 == null) {
+		ValueAndUnits inputValueAndUnits1 = getValueAndUnitsFromSpinner(inputRow1.getSpinnerId());
+		ValueAndUnits inputValueAndUnits2 = getValueAndUnitsFromSpinner(inputRow2.getSpinnerId());
+		if (inputValueAndUnits2 == null || inputValueAndUnits1 == null) {
 			return;
 		}
 
 		// Inputs
-		final ValueAndUnits arg1 = ValueAndUnits.create(inputValue1, inputUnits1);
-		final ValueAndUnits arg2 = ValueAndUnits.create(inputValue2, inputUnits2);
+		final ValueAndUnits arg1 = inputValueAndUnits1.multiplyBy(ValueAndUnits.create(inputValue1));
+		final ValueAndUnits arg2 = inputValueAndUnits2.multiplyBy(ValueAndUnits.create(inputValue2));
 
 		ValueAndUnits result = resultRow.calculate(arg1, arg2);
 		if (result == null) {
@@ -261,22 +257,25 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Convert to preferred units
-		result = result.toSameUnitsAs(resultRow.getPreferredUnits(result));
-
-		// Fill in text box
-		final TextView tv = (TextView) findViewById(resultRow.getTextId());
-		setText(tv, result.getValue());
+		ValueAndUnits preferredUnits = resultRow.getPreferredUnits(result);
 
 		// Set units spinner
+		// TODO: Tweak so that it can differentiate between units of 4.2 kg and plain 1 kg
 		Spinner spinner = (Spinner) findViewById(resultRow.getSpinnerId());
 		for (int i = 0; i < spinner.getCount(); i++) {
 			UnitSpinnerItem item = (UnitSpinnerItem) spinner.getItemAtPosition(i);
-			if (item != null && item.getUnitExpression() != null &&
-					item.getUnitExpression().equals(result.getUnitExpression())) {
+			if (item != null && item.getValueAndUnits() != null &&
+					item.getValueAndUnits().equals(preferredUnits)) {
 				spinner.setSelection(i);
 				break;
 			}
 		}
+
+		result = result.divideBy(preferredUnits);
+
+		// Fill in text box
+		final TextView tv = (TextView) findViewById(resultRow.getTextId());
+		setText(tv, result.getValue());
 	}
 
 	void onUnitChanged(final AdapterView<? extends Adapter> adapterView, final int position,
@@ -292,15 +291,15 @@ public class AstroPhysCalcActivity extends Activity {
 		}
 
 		// Get input units
-		UnitExpression inputUnits1 = getUnitsFromSpinner(inputRow1.getSpinnerId());
-		UnitExpression inputUnits2 = getUnitsFromSpinner(inputRow2.getSpinnerId());
-		if (inputUnits1 == null || inputUnits2 == null) {
+		ValueAndUnits inputValueAndUnits1 = getValueAndUnitsFromSpinner(inputRow1.getSpinnerId());
+		ValueAndUnits inputValueAndUnits2 = getValueAndUnitsFromSpinner(inputRow2.getSpinnerId());
+		if (inputValueAndUnits1 == null || inputValueAndUnits2 == null) {
 			return;
 		}
 
 		// Inputs
-		final ValueAndUnits arg1 = ValueAndUnits.create(inputValue1, inputUnits1);
-		final ValueAndUnits arg2 = ValueAndUnits.create(inputValue2, inputUnits2);
+		final ValueAndUnits arg1 = inputValueAndUnits1.multiplyBy(ValueAndUnits.create(inputValue1));
+		final ValueAndUnits arg2 = inputValueAndUnits2.multiplyBy(ValueAndUnits.create(inputValue2));
 
 		ValueAndUnits result = resultRow.calculate(arg1, arg2);
 		if (result == null) {
@@ -312,11 +311,11 @@ public class AstroPhysCalcActivity extends Activity {
 		if (item == null) {
 			return;
 		}
-		final UnitExpression expr = item.getUnitExpression();
-		if (expr == null) {
+		final ValueAndUnits spinnerValueAndUnits = item.getValueAndUnits();
+		if (spinnerValueAndUnits == null) {
 			return;
 		}
-		result = result.toSameUnitsAs(ValueAndUnits.create(1d, expr));
+		result = result.divideBy(spinnerValueAndUnits);
 
 		// Fill in text box
 		final TextView tv = (TextView) findViewById(resultRow.getTextId());

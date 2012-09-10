@@ -48,13 +48,16 @@ public class UnitSelector {
 	public static final UnitSelector FLUX_SELECTOR = UnitSelector.create(
 			UnitSelectionRule.create(UnitExpression.create(
 					UnitAndDim.create(MassUnit.KG),
-					UnitAndDim.create(TimeUnit.S, -3))));
+					UnitAndDim.create(TimeUnit.S, -3))),
+			UnitSelectionRule.create(Constants.FS_EARTH.divideBy(ValueAndUnits.create(100d)),
+					Constants.FS_EARTH));
 
 	public static final UnitSelector FLUX_POWER_SELECTOR = UnitSelector.create(
 			UnitSelectionRule.create(UnitExpression.create(
 					UnitAndDim.create(MassUnit.KG),
 					UnitAndDim.create(LengthUnit.M, 2),
-					UnitAndDim.create(TimeUnit.S, -3))));
+					UnitAndDim.create(TimeUnit.S, -3))),
+			UnitSelectionRule.create(Constants.L_SUN));
 
 	public static final UnitSelector FLUX_DISTANCE_SELECTOR = UnitSelector.create(
 			UnitSelectionRule.create(UnitExpression.createFromUnit(LengthUnit.LY)),
@@ -89,16 +92,16 @@ public class UnitSelector {
 		return this;
 	}
 
-	public UnitExpression getPreferredUnits(final ValueAndUnits vu) {
+	public ValueAndUnits getPreferredUnits(final ValueAndUnits vu) {
 		if (rules.size() == 0) {
 			return null;
 		}
 		for (UnitSelectionRule rule : rules) {
-			if (!vu.isLessThan(rule.getValueAndUnits())) {
-				return rule.getUnitExpression();
+			if (!vu.isLessThan(rule.getLimit())) {
+				return rule.getUnits();
 			}
 		}
-		return rules.last().getUnitExpression();
+		return rules.last().getUnits();
 	}
 
 	private Set<UnitSelectionRule> getRules() {

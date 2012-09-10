@@ -2,28 +2,36 @@ package org.astrophyscalc;
 
 public class UnitSelectionRule implements Comparable<UnitSelectionRule> {
 
-	private final ValueAndUnits vu;
-	private final UnitExpression expr;
+	private final ValueAndUnits limit;
+	private final ValueAndUnits units;
 
-	public static UnitSelectionRule create(final ValueAndUnits vu, final UnitExpression expr) {
-		return new UnitSelectionRule(vu, expr);
+	public static UnitSelectionRule create(final ValueAndUnits limit) {
+		return new UnitSelectionRule(limit, limit);
+	}
+
+	public static UnitSelectionRule create(final ValueAndUnits limit, final ValueAndUnits units) {
+		return new UnitSelectionRule(limit, units);
+	}
+
+	public static UnitSelectionRule create(final ValueAndUnits limit, final UnitExpression expr) {
+		return new UnitSelectionRule(limit, ValueAndUnits.create(1d, expr));
 	}
 
 	public static UnitSelectionRule create(final UnitExpression expr) {
-		return new UnitSelectionRule(ValueAndUnits.create(1d, expr), expr);
+		return new UnitSelectionRule(ValueAndUnits.create(1d, expr), ValueAndUnits.create(1d, expr));
 	}
 
-	private UnitSelectionRule(final ValueAndUnits vu, final UnitExpression expr) {
-		this.vu = vu;
-		this.expr = expr;
+	private UnitSelectionRule(final ValueAndUnits limit, final ValueAndUnits units) {
+		this.limit = limit;
+		this.units = units;
 	}
 
-	public ValueAndUnits getValueAndUnits() {
-		return vu;
+	public ValueAndUnits getLimit() {
+		return limit;
 	}
 
-	public UnitExpression getUnitExpression() {
-		return expr;
+	public ValueAndUnits getUnits() {
+		return units;
 	}
 
 	/**
@@ -39,18 +47,18 @@ public class UnitSelectionRule implements Comparable<UnitSelectionRule> {
 
 		final UnitSelectionRule rule2 = (UnitSelectionRule) object2;
 
-		return vu.toBaseUnits().equals(rule2.getValueAndUnits().toBaseUnits())
-				&& expr.equals(rule2.getUnitExpression());
+		return limit.toBaseUnits().equals(rule2.getLimit().toBaseUnits())
+				&& units.toBaseUnits().equals(rule2.getUnits().toBaseUnits());
 	}
 
 	@Override
 	public int hashCode() {
-		return vu.hashCode() ^ expr.hashCode();
+		return limit.hashCode() ^ units.hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return UnitSelectionRule.class.getSimpleName() + ": " + vu.toString() + ", "+ expr.toString();
+		return UnitSelectionRule.class.getSimpleName() + ": " + limit.toString() + ", "+ units.toString();
 	}
 
 	/**
@@ -62,7 +70,7 @@ public class UnitSelectionRule implements Comparable<UnitSelectionRule> {
 			throw new NullPointerException();
 		}
 
-		return rule2.getValueAndUnits().compareTo(vu);
+		return rule2.getLimit().compareTo(limit);
 	}
 
 }

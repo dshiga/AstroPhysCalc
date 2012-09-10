@@ -2,8 +2,6 @@ package org.astrophyscalc;
 
 public class UnitSpinnerItem {
 
-	// Orbits
-
 	public static final UnitSpinnerItem[] ORBIT_MASS = {
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_EARTH), "Earths"),
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_JUP), "Jupiters"),
@@ -35,7 +33,7 @@ public class UnitSpinnerItem {
 	public static final UnitSpinnerItem[] KE_ENERGY = {
         UnitSpinnerItem.create(UnitExpression.create(UnitAndDim.create(MassUnit.KG),
         		UnitAndDim.create(LengthUnit.M, 2),
-        		UnitAndDim.create(TimeUnit.S, -2)), "Joules")
+        		UnitAndDim.create(TimeUnit.S, -2)), "J")
     };
 
 	public static final UnitSpinnerItem[] KE_VELOCITY = {
@@ -58,7 +56,8 @@ public class UnitSpinnerItem {
         UnitSpinnerItem.create(UnitExpression.create(
         		UnitAndDim.create(MassUnit.KG),
         		UnitAndDim.create(LengthUnit.KM, 2),
-        		UnitAndDim.create(TimeUnit.S, -3)), "MW")
+        		UnitAndDim.create(TimeUnit.S, -3)), "MW"),
+        UnitSpinnerItem.create(Constants.L_SUN, "Solar")
 	};
 
 	public static final UnitSpinnerItem[] FLUX_DISTANCE = {
@@ -74,23 +73,41 @@ public class UnitSpinnerItem {
         UnitSpinnerItem.create(UnitExpression.create(
         		UnitAndDim.create(MassUnit.KG),
         		UnitAndDim.create(TimeUnit.S, -3)), "W/m^2"),
+        UnitSpinnerItem.create(Constants.FS_EARTH, "S_Earth")
     };
 
 
-	private final UnitExpression expr;
+	private final ValueAndUnits vu;
 	private final String label;
 
 	public static UnitSpinnerItem create(final UnitExpression expr, final String label) {
-		return new UnitSpinnerItem(expr, label);
+		return new UnitSpinnerItem(1d, expr, label);
 	}
 
-	private UnitSpinnerItem(final UnitExpression expr, final String label) {
-		this.expr = expr;
+	public static UnitSpinnerItem create(final double value, final UnitExpression expr, final String label) {
+		return new UnitSpinnerItem(value, expr, label);
+	}
+
+	public static UnitSpinnerItem create(final ValueAndUnits vu, final String label) {
+		return new UnitSpinnerItem(vu, label);
+	}
+
+	private UnitSpinnerItem(final double value, final UnitExpression expr, final String label) {
+		this.vu = ValueAndUnits.create(value, expr);
+		this.label = label;
+	}
+
+	private UnitSpinnerItem(final ValueAndUnits vu, final String label) {
+		this.vu = vu;
 		this.label = label;
 	}
 
 	public UnitExpression getUnitExpression() {
-		return expr;
+		return vu.getUnitExpression();
+	}
+
+	public ValueAndUnits getValueAndUnits() {
+		return vu;
 	}
 
 	@Override

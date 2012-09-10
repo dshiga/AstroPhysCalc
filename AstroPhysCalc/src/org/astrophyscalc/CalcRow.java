@@ -6,17 +6,12 @@ import java.util.List;
 
 public class CalcRow {
 
-	private static final ValueAndUnits G = ValueAndUnits.create(6.67E-11d, UnitExpression.create(
-			UnitAndDim.create(LengthUnit.M, 3), UnitAndDim.create(MassUnit.KG, -1), UnitAndDim.create(TimeUnit.S, -2)));
-
-	// Orbits
-
 	private static class OrbitMassCalculator implements Calculator {
 		@Override
 		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
 			final ValueAndUnits r = vu[0];
 			final ValueAndUnits T = vu[1];
-			return ValueAndUnits.create(4d * Math.pow(Math.PI, 2d)).multiplyBy(r.pow(3)).divideBy(G.multiplyBy(T.pow(2)));
+			return ValueAndUnits.create(4d * Math.pow(Math.PI, 2d)).multiplyBy(r.pow(3)).divideBy(Constants.G.multiplyBy(T.pow(2)));
 		}
 	}
 
@@ -25,7 +20,7 @@ public class CalcRow {
 		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
 			final ValueAndUnits T = vu[0];
 			final ValueAndUnits m = vu[1];
-			return G.multiplyBy(m.multiplyBy(T.pow(2))).divideBy(ValueAndUnits.create(4d * Math.pow(Math.PI, 2))).pow(1, 3);
+			return Constants.G.multiplyBy(m.multiplyBy(T.pow(2))).divideBy(ValueAndUnits.create(4d * Math.pow(Math.PI, 2))).pow(1, 3);
 		}
 	}
 
@@ -34,7 +29,7 @@ public class CalcRow {
 		public ValueAndUnits calculate(final ValueAndUnits ... vu) {
 			final ValueAndUnits r = vu[0];
 			final ValueAndUnits m = vu[1];
-			return ValueAndUnits.create(2d * Math.PI).multiplyBy((r.pow(3).divideBy(G.multiplyBy(m))).pow(1, 2));
+			return ValueAndUnits.create(2d * Math.PI).multiplyBy((r.pow(3).divideBy(Constants.G.multiplyBy(m))).pow(1, 2));
 		}
 	}
 
@@ -125,15 +120,15 @@ public class CalcRow {
 
 	public static final CalcRow FLUX_POWER = CalcRow.create(
 			R.id.label1, R.string.powerLabel, R.id.text1, R.id.units1, new FluxPowerCalculator(),
-			UnitSelector.FLUX_POWER_SELECTOR, UnitSpinnerItem.FLUX_POWER, 0);
+			UnitSelector.FLUX_POWER_SELECTOR, UnitSpinnerItem.FLUX_POWER, 3);
 
 	public static final CalcRow FLUX_DISTANCE = CalcRow.create(
 			R.id.label2, R.string.distanceLabel, R.id.text2, R.id.units2, new FluxDistanceCalculator(),
-			UnitSelector.FLUX_DISTANCE_SELECTOR, UnitSpinnerItem.FLUX_DISTANCE, 0);
+			UnitSelector.FLUX_DISTANCE_SELECTOR, UnitSpinnerItem.FLUX_DISTANCE, 2);
 
 	public static final CalcRow FLUX = CalcRow.create(
 			R.id.label3, R.string.fluxLabel, R.id.text3, R.id.units3, new FluxCalculator(),
-			UnitSelector.FLUX_SELECTOR, UnitSpinnerItem.FLUX, 0);
+			UnitSelector.FLUX_SELECTOR, UnitSpinnerItem.FLUX, 1);
 
 
 
@@ -206,7 +201,7 @@ public class CalcRow {
 		return getCalculator().calculate(vu);
 	}
 
-	public UnitExpression getPreferredUnits(final ValueAndUnits vu) {
+	public ValueAndUnits getPreferredUnits(final ValueAndUnits vu) {
 		return getUnitSelector().getPreferredUnits(vu);
 	}
 
