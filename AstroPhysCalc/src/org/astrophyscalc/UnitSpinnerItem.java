@@ -26,8 +26,8 @@ public class UnitSpinnerItem {
 	// Kinetic energy
 
 	public static final UnitSpinnerItem[] KE_MASS = {
-        UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.G), "G"),
-        UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.KG), "KG")
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.G), "g"),
+        UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.KG), "kg")
     };
 
 	public static final UnitSpinnerItem[] KE_ENERGY = {
