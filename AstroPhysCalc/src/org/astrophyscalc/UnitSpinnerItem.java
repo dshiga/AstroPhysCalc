@@ -73,7 +73,7 @@ public class UnitSpinnerItem {
         UnitSpinnerItem.create(UnitExpression.create(
         		UnitAndDim.create(MassUnit.KG),
         		UnitAndDim.create(TimeUnit.S, -3)), "W/m^2"),
-        UnitSpinnerItem.create(Constants.FS_EARTH, "S_Earth")
+        UnitSpinnerItem.create(Constants.FS_EARTH, "Sun_Earth")
     };
 
 
