@@ -2,6 +2,11 @@ package org.astrophyscalc;
 
 public class UnitSpinnerItem {
 
+
+	/**** Constants *****/
+
+	// Orbits
+
 	public static final UnitSpinnerItem[] ORBIT_MASS = {
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_EARTH), "Earths"),
         UnitSpinnerItem.create(UnitExpression.createFromUnit(MassUnit.M_JUP), "Jupiters"),
@@ -75,6 +80,8 @@ public class UnitSpinnerItem {
         		UnitAndDim.create(TimeUnit.S, -3)), "W/m^2"),
         UnitSpinnerItem.create(Constants.FS_EARTH, "Sun_Earth")
     };
+
+	/****** End constants ******/
 
 
 	private final ValueAndUnits vu;

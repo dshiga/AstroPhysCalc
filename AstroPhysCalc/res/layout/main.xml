@@ -31,14 +31,14 @@
 	    <Spinner
 	        android:id="@+id/units1"
 	        android:layout_width="@dimen/spinner"
-	        android:layout_height="wrap_content"
+	        android:layout_height="fill_parent"
 	        />
 	    
 	    <Button
 	        android:id="@+id/button1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Calculate"
+	        android:text="Calc"
 	        />	    
 	</LinearLayout>    
 
@@ -62,14 +62,14 @@
 	    <Spinner
 	        android:id="@+id/units2"
 	        android:layout_width="@dimen/spinner"
-	        android:layout_height="wrap_content"
+	        android:layout_height="fill_parent"
 	        />	    
 	    
 	    <Button
 	        android:id="@+id/button2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Calculate"
+	        android:text="Calc"
 	        />
 	    
 	</LinearLayout>
@@ -94,14 +94,14 @@
 	    <Spinner
 	        android:id="@+id/units3"
 	        android:layout_width="@dimen/spinner"
-	        android:layout_height="wrap_content"
+	        android:layout_height="fill_parent"
 	        />
 	    
 	    <Button
         	android:id="@+id/button3"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:text="Calculate"
+        	android:text="Calc"
         	/>
 
     </LinearLayout>    
